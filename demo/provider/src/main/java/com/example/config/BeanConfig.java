@@ -52,9 +52,7 @@ public class BeanConfig {
 		return new BeanPostProcessor() {
 			@Override
 			public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-				if (!bean.getClass().getName().contains("org.springframework")) {
-					log.info("{}:{}", bean.getClass().getName(), beanName);
-				}
+				log.info("{}:{}", bean.getClass().getName(), beanName);
 				return bean;
 			}
 		};
