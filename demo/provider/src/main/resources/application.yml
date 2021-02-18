@@ -1,10 +1,9 @@
 ##基本信息配置
 spring:
   datasource:
-    hikari:
-      jdbc-url: jdbc:mysql://localhost:3306/test?useSSL=false
-      username: root
-      password: ""
+    url: jdbc:mysql://localhost:3306/test?useSSL=false
+    username: root
+    password: ""
   main:
     banner-mode: off
 
