@@ -1,4 +1,4 @@
-package com.example.config;
+package com.example.db1.config;
 
 import javax.sql.DataSource;
 
@@ -8,35 +8,40 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySource;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
- * bean配置
+ * 构建MybatisPlus配置
  */
 @Configuration
-@MapperScan("com.example.mapper.db1")
-public class BeanConfig {
+@MapperScan("db1/mapper/*.xml")
+@PropertySource(value = "classpath:db1/mybatisPlus.properties")
+public class MybatisPlusConfig {
 
-	private static final Logger log = LoggerFactory.getLogger(BeanConfig.class);
+	private static final Logger log = LoggerFactory.getLogger(MybatisPlusConfig.class);
 
-	private final Environment env;
+	@Value("${url}")
+	private String url;
 
-	public BeanConfig(Environment env) {
-		this.env = env;
-	}
+	@Value("${username}")
+	private String username;
+
+	@Value("${password}")
+	private String password;
 
 	@Bean("db1")
 	public DataSource dataSource() {
 		HikariConfig hikariConfig = new HikariConfig();
-		hikariConfig.setJdbcUrl(env.getProperty("spring.datasource.url"));
-		hikariConfig.setUsername(env.getProperty("spring.datasource.username"));
-		hikariConfig.setPassword(env.getProperty("spring.datasource.password"));
+		hikariConfig.setJdbcUrl(url);
+		hikariConfig.setUsername(username);
+		hikariConfig.setPassword(password);
 		return new HikariDataSource(hikariConfig);
 	}
 

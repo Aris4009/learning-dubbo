@@ -1,9 +1,5 @@
 ##基本信息配置
 spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/test?useSSL=false
-    username: root
-    password: ""
   main:
     banner-mode: off
 

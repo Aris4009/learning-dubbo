@@ -1,4 +1,4 @@
-package com.example.config;
+package com.example.db2.config;
 
 import javax.sql.DataSource;
 
@@ -16,10 +16,10 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
- * 从xml文件中构建mybatis配置
+ * 构建mybatis配置
  */
 @Configuration
-@PropertySource(value = "classpath:db2/my.properties")
+@PropertySource(value = "classpath:db2/mybatis.properties")
 public class MybatisConfig {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
