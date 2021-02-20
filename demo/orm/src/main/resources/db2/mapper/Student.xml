@@ -2,10 +2,42 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.mybatis.example.BlogMapper">
-    <select id="selectBlog" resultType="Blog">
+<mapper namespace="com.example.db2.dao.StudentDao">
+    <select id="list" resultType="com.example.db2.model.Student">
         select *
-        from Blog
-        where id = #{id}
+        from students
+        where 1=1
+        <if test="id !=null">
+            and id = #{id}
+        </if>
+        <if test="name !=null">
+            and name = #{name}
+        </if>
+        <if test="type !=null">
+            and type = #{type}
+        </if>
     </select>
+
+    <insert id="add" useGeneratedKeys="true">
+        insert into students(id, name, type)
+        values (#{id}, #{name}, #{type})
+    </insert>
+
+    <update id="modify">
+        update students
+        set id ={id}
+        <if test="name != null">
+            , name = #{name}
+        </if>
+        <if test="type != null">
+            , type = #{type}
+        </if>
+        where id = #{id}
+    </update>
+
+    <delete id="del">
+        delete
+        from students
+        where id = #{id}
+    </delete>
 </mapper>
