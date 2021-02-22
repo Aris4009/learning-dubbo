@@ -12,11 +12,12 @@ import org.springframework.stereotype.Service;
 import com.example.db2.dao.StudentDao;
 import com.example.db2.model.Student;
 import com.example.db2.service.IStudentService;
+import com.example.ex.BusinessException;
 
 @Service
 public class StudentServiceImpl implements IStudentService {
 
-	private SqlSessionFactory sqlSessionFactory;
+	private final SqlSessionFactory sqlSessionFactory;
 
 	public StudentServiceImpl(@Qualifier("ssf2") SqlSessionFactory sqlSessionFactory) {
 		this.sqlSessionFactory = sqlSessionFactory;
@@ -25,59 +26,59 @@ public class StudentServiceImpl implements IStudentService {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Override
-	public List<Student> list(Student student) throws Exception {
+	public List<Student> list(Student student) throws BusinessException {
 		List<Student> list = null;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
 			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
 			list = studentDao.list(student);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			throw new Exception(e);
+			throw BusinessException.internalError();
 		}
 		return list;
 	}
 
 	@Override
-	public int add(Student student) throws Exception {
+	public int add(Student student) throws BusinessException {
 		int code = -1;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
 			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
 			code = studentDao.add(student);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			throw new Exception(e);
+			throw BusinessException.internalError();
 		}
 		return code;
 	}
 
 	@Override
-	public int modify(Student student) throws Exception {
+	public int modify(Student student) throws BusinessException {
 		int code = -1;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
 			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
 			code = studentDao.modify(student);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			throw new Exception(e);
+			throw BusinessException.internalError();
 		}
 		return code;
 	}
 
 	@Override
-	public int del(Student student) throws Exception {
+	public int del(Student student) throws BusinessException {
 		int code = -1;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
 			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
 			code = studentDao.del(student);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			throw new Exception(e);
+			throw BusinessException.internalError();
 		}
 		return code;
 	}
 
 	@Override
-	public void transaction(Student student) throws Exception {
+	public void transaction(Student student) throws BusinessException {
 		int code = -1;
 		SqlSession sqlSession = sqlSessionFactory.openSession();
 		sqlSession.commit(false);
@@ -91,7 +92,7 @@ public class StudentServiceImpl implements IStudentService {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			sqlSession.rollback();
-			throw new Exception(e);
+			throw BusinessException.internalError();
 		} finally {
 			sqlSession.close();
 		}

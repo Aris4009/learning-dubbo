@@ -3,6 +3,7 @@ package com.example.db2.service;
 import java.util.List;
 
 import com.example.db2.model.Student;
+import com.example.ex.BusinessException;
 
 public interface IStudentService {
 	/**
@@ -11,7 +12,7 @@ public interface IStudentService {
 	 * @param student
 	 * @return
 	 */
-	List<Student> list(Student student) throws Exception;
+	List<Student> list(Student student) throws BusinessException;
 
 	/**
 	 * 新增
@@ -19,7 +20,7 @@ public interface IStudentService {
 	 * @param student
 	 * @return
 	 */
-	int add(Student student) throws Exception;
+	int add(Student student) throws BusinessException;
 
 	/**
 	 * 修改
@@ -27,7 +28,7 @@ public interface IStudentService {
 	 * @param student
 	 * @return
 	 */
-	int modify(Student student) throws Exception;
+	int modify(Student student) throws BusinessException;
 
 	/**
 	 * 删除
@@ -35,12 +36,12 @@ public interface IStudentService {
 	 * @param student
 	 * @return
 	 */
-	int del(Student student) throws Exception;
+	int del(Student student) throws BusinessException;
 
 	/**
 	 * 测试事务
 	 * 
 	 * @param student
 	 */
-	void transaction(Student student) throws Exception;
+	void transaction(Student student) throws BusinessException;
 }

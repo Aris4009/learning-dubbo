@@ -11,7 +11,7 @@
             and id = #{id}
         </if>
         <if test="name !=null">
-            and name = #{name}
+            and name like "%"#{name}"%"
         </if>
         <if test="type !=null">
             and type = #{type}

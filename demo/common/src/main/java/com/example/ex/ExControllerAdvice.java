@@ -22,7 +22,9 @@ public class ExControllerAdvice {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Map<String, Object>> ex(@RequestBody Exception ex, HttpServletRequest request) {
-		Map<String, Object> map = ExResponseEntity.map(ex, request);
+		log.error("url:{},error:{}", request.getRequestURI(), ex);
+		Exception exception = new Exception("internal error");
+		Map<String, Object> map = ExResponseEntity.map(exception, request);
 		return new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }
