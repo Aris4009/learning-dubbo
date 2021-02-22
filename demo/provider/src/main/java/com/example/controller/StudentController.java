@@ -2,8 +2,6 @@ package com.example.controller;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +19,6 @@ import com.example.db2.service.IStudentService;
 @RequestMapping("/api/student")
 public class StudentController {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
-
 	private IStudentService studentService;
 
 	public StudentController(IStudentService studentService) {
@@ -36,16 +32,8 @@ public class StudentController {
 	 * @return
 	 */
 	@PostMapping("/list")
-	public ResponseEntity<List<Student>> list(@RequestBody Student student) {
-		log.info("{}", student);
-		ResponseEntity<List<Student>> responseEntity;
-		try {
-			responseEntity = new ResponseEntity<>(studentService.list(student), HttpStatus.OK);
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			responseEntity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		return responseEntity;
+	public ResponseEntity<List<Student>> list(@RequestBody Student student) throws Exception {
+		return new ResponseEntity<>(studentService.list(student), HttpStatus.OK);
 	}
 
 	/**
@@ -55,18 +43,12 @@ public class StudentController {
 	 * @return
 	 */
 	@PostMapping("/add")
-	public ResponseEntity<Student> add(@RequestBody Student student) {
-		log.info("{}", student);
+	public ResponseEntity<Student> add(@RequestBody Student student) throws Exception {
 		ResponseEntity<Student> responseEntity;
-		try {
-			int code = studentService.add(student);
-			if (code > 0) {
-				responseEntity = new ResponseEntity<>(student, HttpStatus.OK);
-			} else {
-				responseEntity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+		int code = studentService.add(student);
+		if (code > 0) {
+			responseEntity = new ResponseEntity<>(student, HttpStatus.OK);
+		} else {
 			responseEntity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return responseEntity;
@@ -79,19 +61,13 @@ public class StudentController {
 	 * @return
 	 */
 	@PostMapping("/modify")
-	public ResponseEntity<Integer> modify(@RequestBody Student student) {
-		log.info("{}", student);
+	public ResponseEntity<Integer> modify(@RequestBody Student student) throws Exception {
 		ResponseEntity<Integer> responseEntity;
-		try {
-			int code = studentService.modify(student);
-			if (code > 0) {
-				responseEntity = new ResponseEntity<>(code, HttpStatus.OK);
-			} else {
-				responseEntity = new ResponseEntity<>(code, HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			responseEntity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		int code = studentService.modify(student);
+		if (code > 0) {
+			responseEntity = new ResponseEntity<>(code, HttpStatus.OK);
+		} else {
+			responseEntity = new ResponseEntity<>(code, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return responseEntity;
 	}
@@ -103,33 +79,22 @@ public class StudentController {
 	 * @return
 	 */
 	@PostMapping("/del")
-	public ResponseEntity<Integer> del(@RequestBody Student student) {
-		log.info("{}", student);
+	public ResponseEntity<Integer> del(@RequestBody Student student) throws Exception {
 		ResponseEntity<Integer> responseEntity;
-		try {
-			int code = studentService.del(student);
-			if (code > 0) {
-				responseEntity = new ResponseEntity<>(code, HttpStatus.OK);
-			} else {
-				responseEntity = new ResponseEntity<>(code, HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			responseEntity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		int code = studentService.del(student);
+		if (code > 0) {
+			responseEntity = new ResponseEntity<>(code, HttpStatus.OK);
+		} else {
+			responseEntity = new ResponseEntity<>(code, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return responseEntity;
 	}
 
 	@PostMapping("/transaction")
-	public ResponseEntity<Void> transaction(@RequestBody Student student) {
-		log.info("{}", student);
+	public ResponseEntity<Void> transaction(@RequestBody Student student) throws Exception {
 		ResponseEntity<Void> responseEntity;
-		try {
-			studentService.transaction(student);
-			responseEntity = new ResponseEntity<>(HttpStatus.OK);
-		} catch (Exception e) {
-			responseEntity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		studentService.transaction(student);
+		responseEntity = new ResponseEntity<>(HttpStatus.OK);
 		return responseEntity;
 	}
 }

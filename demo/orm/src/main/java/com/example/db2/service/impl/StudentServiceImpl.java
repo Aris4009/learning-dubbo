@@ -22,7 +22,7 @@ public class StudentServiceImpl implements IStudentService {
 		this.sqlSessionFactory = sqlSessionFactory;
 	}
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Override
 	public List<Student> list(Student student) throws Exception {
