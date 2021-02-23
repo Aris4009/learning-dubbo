@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.example.request.wrapper.RequestWrapper;
+
 @Component
 @WebFilter(urlPatterns = "/api/*")
 public class LogFilter implements Filter {

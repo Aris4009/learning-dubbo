@@ -8,11 +8,14 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -27,37 +30,30 @@ public class MybatisPlusConfig {
 
 	private static final Logger log = LoggerFactory.getLogger(MybatisPlusConfig.class);
 
-	@Value("${url}")
-	private String url;
-
-	@Value("${username}")
-	private String username;
-
-	@Value("${password}")
-	private String password;
-
 	@Bean("db1")
-	public DataSource dataSource() {
+	public DataSource dataSource(@Value("${db1.url}") String url, @Value("${db1.username}") String username,
+			@Value("${db1.password}") String password) {
 		HikariConfig hikariConfig = new HikariConfig();
 		hikariConfig.setJdbcUrl(url);
 		hikariConfig.setUsername(username);
 		hikariConfig.setPassword(password);
+		log.info("create db1:{}", url);
 		return new HikariDataSource(hikariConfig);
 	}
 
 	@Bean("ssf1")
-	public SqlSessionFactory sqlSessionFactory() throws Exception {
+	public SqlSessionFactory sqlSessionFactory(@Qualifier("db1") DataSource dataSource) throws Exception {
 		SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
-		sqlSessionFactoryBean.setDataSource(dataSource());
+		sqlSessionFactoryBean.setDataSource(dataSource);
 		return sqlSessionFactoryBean.getObject();
 	}
 
 	@Bean
-	public static BeanPostProcessor initDataSource() {
+	public static BeanPostProcessor initDataSource(@Autowired Environment env) {
 		return new BeanPostProcessor() {
 			@Override
 			public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-				log.info("{}:{}", bean.getClass().getName(), beanName);
+//				log.info("{}:{}", bean.getClass().getName(), beanName);
 				return bean;
 			}
 		};

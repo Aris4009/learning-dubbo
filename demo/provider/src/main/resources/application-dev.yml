@@ -1,0 +1,23 @@
+##基本信息配置
+spring:
+  main:
+    banner-mode: off
+    log-startup-info: false
+
+##服务器配置
+server:
+  port: 8000
+  compression:
+    enabled: true
+  http2:
+    enabled: true
+  error:
+    whitelabel:
+      enabled: false
+  servlet:
+    session:
+      cookie:
+        http-only: true
+    encoding:
+      charset: utf-8
+      force: true

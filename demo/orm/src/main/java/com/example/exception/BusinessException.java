@@ -1,4 +1,4 @@
-package com.example.ex;
+package com.example.exception;
 
 public class BusinessException extends Exception {
 

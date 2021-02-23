@@ -1,4 +1,4 @@
-package com.example.filter;
+package com.example.request.wrapper;
 
 import javax.servlet.http.HttpServletRequest;
 

@@ -1,4 +1,4 @@
-package com.example.ex;
+package com.example.exception.handler;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package com.example.filter;
+package com.example.request.wrapper;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -13,11 +13,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.Part;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.example.json.JSON;
 
+/**
+ * Request请求包装类，用于在request范围上的上下文中读取请求体参数等
+ */
 public class RequestWrapper extends HttpServletRequestWrapper {
 
 	private String requestBody = null;
@@ -27,8 +27,6 @@ public class RequestWrapper extends HttpServletRequestWrapper {
 	private static final int BUFF_SIZE = 4096;
 
 	private static final int CAPACITY = 1024;
-
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * Constructs a request object wrapping the given request.

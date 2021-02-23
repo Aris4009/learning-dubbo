@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import com.example.db2.dao.StudentDao;
 import com.example.db2.model.Student;
 import com.example.db2.service.IStudentService;
-import com.example.ex.BusinessException;
+import com.example.exception.BusinessException;
 
 @Service
 public class StudentServiceImpl implements IStudentService {

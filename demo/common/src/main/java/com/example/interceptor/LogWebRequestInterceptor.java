@@ -11,9 +11,9 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.WebRequestInterceptor;
 
-import com.example.filter.RequestWrapper;
-import com.example.filter.RequestWrapperFacade;
 import com.example.json.JSON;
+import com.example.request.wrapper.RequestWrapper;
+import com.example.request.wrapper.RequestWrapperFacade;
 
 /**
  * 日志请求参数拦截器

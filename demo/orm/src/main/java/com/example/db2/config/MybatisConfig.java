@@ -1,17 +1,26 @@
 package com.example.db2.config;
 
+import java.util.Properties;
+
 import javax.sql.DataSource;
 
+import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
+import com.github.pagehelper.PageInterceptor;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -19,38 +28,54 @@ import com.zaxxer.hikari.HikariDataSource;
  * 构建mybatis配置
  */
 @Configuration
-@PropertySource(value = "classpath:db2/mybatis.properties")
+@PropertySource(value = { "classpath:db2/mybatis.properties", "classpath:db2/page-helper.properties" })
 public class MybatisConfig {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	@Value("${url}")
-	private String url;
-
-	@Value("${username}")
-	private String username;
-
-	@Value("${password}")
-	private String password;
-
-	@Value("${mapper.locations}")
-	private String mapperLocations;
+	private final static String PAGE_HELP_PREFIX = "db2.page.helper.";
 
 	@Bean("db2")
-	public DataSource dataSource() {
+	public DataSource dataSource(@Value("${db2.url}") String url, @Value("${db2.username}") String username,
+			@Value("${db2.password}") String password) {
 		HikariConfig hikariConfig = new HikariConfig();
 		hikariConfig.setJdbcUrl(url);
 		hikariConfig.setUsername(username);
 		hikariConfig.setPassword(password);
+		log.info("create db2:{}", url);
 		return new HikariDataSource(hikariConfig);
 	}
 
 	@Bean("ssf2")
-	public SqlSessionFactory sqlSessionFactory() throws Exception {
+	public SqlSessionFactory sqlSessionFactory(@Qualifier("db2") DataSource dataSource,
+			@Value("${db2.mapper.locations}") String mapperLocations,
+			@Qualifier("db2PageHelperPlugin") Interceptor pageHelperPlugin) throws Exception {
 		SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
-		sqlSessionFactoryBean.setDataSource(dataSource());
+		sqlSessionFactoryBean.setDataSource(dataSource);
 		sqlSessionFactoryBean
 				.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(mapperLocations));
+		// 添加pageHelper插件，如果使用配置文件，注意plugins在配置文件中的顺序
+		sqlSessionFactoryBean.setPlugins(pageHelperPlugin);
 		return sqlSessionFactoryBean.getObject();
+	}
+
+	@Bean("db2PageHelperPlugin")
+	public Interceptor pageHelperPlugin(@Autowired Environment environment) {
+		Properties properties = new Properties();
+		Interceptor interceptor = new PageInterceptor();
+		ConfigurableEnvironment configurableEnvironment = (ConfigurableEnvironment) environment;
+		configurableEnvironment.getPropertySources().forEach(propertySource -> {
+			if (propertySource instanceof MapPropertySource) {
+				MapPropertySource mapPropertySource = (MapPropertySource) propertySource;
+				for (String key : mapPropertySource.getPropertyNames()) {
+					if (key.startsWith(PAGE_HELP_PREFIX)) {
+						String k = key.substring(PAGE_HELP_PREFIX.length(), key.length());
+						properties.put(k, mapPropertySource.getProperty(key));
+					}
+				}
+			}
+		});
+		interceptor.setProperties(properties);
+		return interceptor;
 	}
 }
