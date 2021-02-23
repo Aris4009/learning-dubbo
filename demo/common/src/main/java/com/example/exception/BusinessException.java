@@ -33,6 +33,27 @@ public class BusinessException extends Exception {
 	}
 
 	/**
+	 * 参数错误
+	 * 
+	 * @param param 请求参数名
+	 * @return 参数错误
+	 */
+	public static BusinessException paramsError(String param) {
+		return new BusinessException(param + " params error");
+	}
+
+	/**
+	 * 参数错误
+	 *
+	 * @param param  请求参数名
+	 * @param errMsg 错误消息
+	 * @return 参数错误
+	 */
+	public static BusinessException paramsError(String param, String errMsg) {
+		return new BusinessException(param + " " + errMsg);
+	}
+
+	/**
 	 * 参数不能为空
 	 * 
 	 * @param name 请求参数名

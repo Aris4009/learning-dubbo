@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.db2.dao.StudentClassDao">
+    <select id="list" resultType="com.example.db2.model.StudentClass">
+        select *
+        from student_class
+        <where>
+            <if test="id !=null">
+                and id = #{id}
+            </if>
+            <if test="studentId !=null">
+                and student_id like "%"#{studentId}"%"
+            </if>
+            <if test="classId !=null">
+                and class_id like "%"#{classId}"%"
+            </if>
+        </where>
+    </select>
+
+    <insert id="add" useGeneratedKeys="true">
+        insert into student_class(student_id, class_id)
+        values (#{studentId}, #{classId})
+    </insert>
+
+    <update id="modify">
+        update student_class
+        <set>
+            <if test="studentId != null">
+                student_id = #{studentId},
+            </if>
+            <if test="classId != null">
+                class_id = #{classId},
+            </if>
+        </set>
+        <where>
+            <if test="id != null">
+                id = #{id}#,
+            </if>
+            <if test="studentId != null">
+                student_id = #{studentId}#,
+            </if>
+            <if test="classId != null">
+                class_id = #{classId}#,
+            </if>
+        </where>
+    </update>
+
+    <delete id="del">
+        delete
+        from classes
+        where id = #{id}
+    </delete>
+
+    <insert id="batch" useGeneratedKeys="true">
+        insert into student_class(student_id,class_id)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.studentId},#{item.classId}#)
+        </foreach>
+    </insert>
+</mapper>

@@ -19,19 +19,20 @@
     </select>
 
     <insert id="add" useGeneratedKeys="true">
-        insert into students(id, name, type)
-        values (#{id}, #{name}, #{type})
+        insert into students(name, type)
+        values (#{name}, #{type})
     </insert>
 
     <update id="modify">
         update students
-        set id ={id}
-        <if test="name != null">
-            , name = #{name}
-        </if>
-        <if test="type != null">
-            , type = #{type}
-        </if>
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+        </set>
         where id = #{id}
     </update>
 
@@ -40,4 +41,16 @@
         from students
         where id = #{id}
     </delete>
+
+    <insert id="batch" useGeneratedKeys="true">
+        insert into students(name,type)
+        values
+        <foreach collection="list" item="student" separator=",">
+            (#{student.name},#{student.type})
+        </foreach>
+    </insert>
+
+    <update id="truncate">
+        truncate table #{tableName}
+    </update>
 </mapper>

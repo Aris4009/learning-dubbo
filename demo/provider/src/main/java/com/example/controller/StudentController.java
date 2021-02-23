@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.db2.model.Student;
 import com.example.db2.service.IStudentService;
+import com.example.exception.BusinessException;
 
 /**
  * 请求controller
@@ -92,9 +94,33 @@ public class StudentController {
 
 	@PostMapping("/transaction")
 	public ResponseEntity<Void> transaction(@RequestBody Student student) throws Exception {
-		ResponseEntity<Void> responseEntity;
 		studentService.transaction(student);
-		responseEntity = new ResponseEntity<>(HttpStatus.OK);
-		return responseEntity;
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	/**
+	 * 批量插入
+	 * 
+	 * @param param 批量插入数量
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping("/batch")
+	public ResponseEntity<Void> batch(@RequestBody Map<String, Integer> param) throws Exception {
+		studentService.batch(param.get("num"));
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	/**
+	 * 清空表
+	 * 
+	 * @param tableNames 清空表
+	 * @return
+	 * @throws BusinessException
+	 */
+	@PostMapping("/truncate")
+	public ResponseEntity<Void> truncate(@RequestBody List<String> tableNames) throws Exception {
+		studentService.truncate(tableNames);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }
