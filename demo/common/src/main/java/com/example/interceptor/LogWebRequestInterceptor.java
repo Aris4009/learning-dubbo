@@ -1,5 +1,7 @@
 package com.example.interceptor;
 
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -7,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.WebRequestInterceptor;
@@ -30,6 +31,8 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 	public void preHandle(WebRequest request) throws Exception {
 		ServletWebRequest servletWebRequest = (ServletWebRequest) request;
 		HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
+		String requestId = UUID.randomUUID().toString();
+		httpServletRequest.setAttribute("request-id", requestId);
 		String url = httpServletRequest.getRequestURI();
 		if (url.equals("/error")) {
 			return;
@@ -42,9 +45,10 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 			String contentType = httpServletRequest.getContentType();
 			if (contentType.equalsIgnoreCase(MediaType.MULTIPART_FORM_DATA.getType())) {
 				multipartBuilder.append(getMultipartFilesInfo(servletWebRequest));
-				log.info("url:{},method:{},params:{},multipart-params:{}", url, method, builder, multipartBuilder);
+				log.info("request-id:{},url:{},method:{},params:{},multipart-params:{}", requestId, url, method,
+						builder, multipartBuilder);
 			} else {
-				log.info("url:{},method:{},params:{}", url, method, builder);
+				log.info("request-id:{},url:{},method:{},params:{}", requestId, url, method, builder);
 			}
 		} else {
 			throw new BusinessException("unsupported " + method + " method");
@@ -59,12 +63,13 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 	@Override
 	public void afterCompletion(WebRequest request, Exception ex) throws Exception {
 		ServletWebRequest servletWebRequest = (ServletWebRequest) request;
-		Object obj = servletWebRequest.getAttribute("ex", RequestAttributes.SCOPE_REQUEST);
+		HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
+		Object obj = httpServletRequest.getAttribute("ex");
 		if (obj == null) {
 			return;
 		}
+		String requestId = (String) httpServletRequest.getAttribute("request-id");
 		Exception exception = (Exception) obj;
-		HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
 		String url = httpServletRequest.getRequestURI();
 		HttpMethod method = servletWebRequest.getHttpMethod();
 		StringBuilder builder = new StringBuilder(CAPACITY);
@@ -74,10 +79,10 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 			String contentType = httpServletRequest.getContentType();
 			if (contentType.equalsIgnoreCase(MediaType.MULTIPART_FORM_DATA.getType())) {
 				multipartBuilder.append(getMultipartFilesInfo(servletWebRequest));
-				log.error("url:{},method:{},params:{},multipart-params:{}", url, method, builder, multipartBuilder,
-						exception);
+				log.error("request-id:{},url:{},method:{},params:{},multipart-params:{}", requestId, url, method,
+						builder, multipartBuilder, exception);
 			} else {
-				log.error("url:{},method:{},params:{}", url, method, builder, exception);
+				log.error("request-id:{},url:{},method:{},params:{}", requestId, url, method, builder, exception);
 			}
 		}
 	}

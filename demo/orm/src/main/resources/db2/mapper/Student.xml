@@ -50,7 +50,7 @@
         </foreach>
     </insert>
 
-    <update id="truncate">
+    <update id="truncate" parameterType="hashmap">
         truncate table #{tableName}
     </update>
 </mapper>
