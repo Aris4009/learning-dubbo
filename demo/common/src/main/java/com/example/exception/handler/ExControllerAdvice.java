@@ -2,15 +2,14 @@ package com.example.exception.handler;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
 
 /**
  * 统一错误处理controller
@@ -18,11 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 @ControllerAdvice
 public class ExControllerAdvice {
 
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
-
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<Map<String, Object>> ex(@RequestBody Exception ex, HttpServletRequest request) {
-		log.error("url:{},error:{}", request.getRequestURI(), ex);
+	public ResponseEntity<Map<String, Object>> ex(@RequestBody Exception ex, WebRequest request) {
+		ServletWebRequest servletWebRequest = (ServletWebRequest) request;
+		servletWebRequest.setAttribute("ex", ex, RequestAttributes.SCOPE_REQUEST);
 		Map<String, Object> map = ExResponseEntity.map(ex, request);
 		return new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
 	}

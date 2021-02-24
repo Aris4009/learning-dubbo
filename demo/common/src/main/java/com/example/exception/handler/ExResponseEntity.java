@@ -4,12 +4,12 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
 
 import com.example.exception.BusinessException;
 
@@ -19,7 +19,7 @@ public class ExResponseEntity extends ResponseEntity<Map<String, Object>> {
 		super(map, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	public static Map<String, Object> map(Exception ex, HttpServletRequest request) {
+	public static Map<String, Object> map(Exception ex, WebRequest request) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("timestamp", LocalDateTime.now().toString());
 		map.put("status", 500);
@@ -32,7 +32,8 @@ public class ExResponseEntity extends ResponseEntity<Map<String, Object>> {
 		} else {
 			map.put("message", "internal error");
 		}
-		map.put("path", request.getRequestURI());
+		ServletWebRequest servletWebRequest = (ServletWebRequest) request;
+		map.put("path", servletWebRequest.getRequest().getRequestURI());
 		return map;
 	}
 }

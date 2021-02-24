@@ -30,7 +30,7 @@ public class StudentServiceImpl implements IStudentService {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Override
-	public List<Student> list(Student student) throws Exception {
+	public List<Student> list(Student student) throws BusinessException {
 		List<Student> list = null;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
 			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
@@ -40,7 +40,7 @@ public class StudentServiceImpl implements IStudentService {
 	}
 
 	@Override
-	public int add(Student student) throws Exception {
+	public int add(Student student) throws BusinessException {
 		int code = -1;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
 			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
@@ -50,7 +50,7 @@ public class StudentServiceImpl implements IStudentService {
 	}
 
 	@Override
-	public int modify(Student student) throws Exception {
+	public int modify(Student student) throws BusinessException {
 		int code = -1;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
 			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
@@ -60,7 +60,7 @@ public class StudentServiceImpl implements IStudentService {
 	}
 
 	@Override
-	public int del(Student student) throws Exception {
+	public int del(Student student) throws BusinessException {
 		int code = -1;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
 			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
@@ -70,7 +70,7 @@ public class StudentServiceImpl implements IStudentService {
 	}
 
 	@Override
-	public void transaction(Student student) throws Exception {
+	public void transaction(Student student) throws BusinessException {
 		int code = -1;
 		SqlSession sqlSession = sqlSessionFactory.openSession();
 		sqlSession.commit(false);
@@ -90,7 +90,7 @@ public class StudentServiceImpl implements IStudentService {
 	}
 
 	@Override
-	public void batch(int num) throws Exception {
+	public void batch(int num) throws BusinessException {
 		if (num < 1 || num > 1000) {
 			throw BusinessException.paramsError("num", "必须在1~1000之间");
 		}
@@ -138,7 +138,7 @@ public class StudentServiceImpl implements IStudentService {
 	}
 
 	@Override
-	public void truncate(List<String> tableNames) throws Exception {
+	public void truncate(List<String> tableNames) throws BusinessException {
 		if (tableNames == null || tableNames.isEmpty()) {
 			throw BusinessException.paramsMustBeNotEmptyOrNullError("tableNames");
 		}
