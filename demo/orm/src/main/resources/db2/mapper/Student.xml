@@ -50,7 +50,8 @@
         </foreach>
     </insert>
 
-    <update id="truncate" parameterType="hashmap">
-        truncate table #{tableName}
+    <!-- #防止sql注入 $原样参数 -->
+    <update id="truncate">
+        truncate table ${tableName}
     </update>
 </mapper>

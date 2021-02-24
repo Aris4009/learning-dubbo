@@ -124,6 +124,8 @@ public final class Response<T> {
 				builder.append(m);
 			}
 			s = builder.toString();
+		} else {
+			s = "success";
 		}
 		return (Response<T>) Response.builder().data(data).path(path).message(s).status(200)
 				.timestamp(LocalDateTime.now().toString()).build();
