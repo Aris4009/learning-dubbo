@@ -1,10 +1,7 @@
 # Windows 启停mysql
 
 ## 初始化
-* bin\mysqld --initialize --console
-* bin\mysqld --initialize-insecure --console
-* --defaults-file=/opt/mysql/mysql/etc/my.cnf
-    --initialize --user=mysql
+* mysqld.exe --defaults-file=D:/mysql-8.0.23-winx64/conf/my.cnf --initialize-insecure --console
 
 ## 启动停止
 * C:\> "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysqld" --console
