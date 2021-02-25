@@ -37,7 +37,7 @@
         where id = #{id}
     </delete>
 
-    <insert id="batch" useGeneratedKeys="true">
+    <insert id="batch" useGeneratedKeys="true" keyProperty="id">
         insert into classes(class_name)
         values
         <foreach collection="list" item="cls" separator=",">

@@ -1,7 +1,10 @@
 package com.example.db2.service;
 
 import java.util.List;
+import java.util.Map;
 
+import com.example.db2.model.MyPage;
+import com.example.db2.model.MyPageInfo;
 import com.example.db2.model.Student;
 import com.example.exception.BusinessException;
 
@@ -54,10 +57,10 @@ public interface IStudentService {
 	/**
 	 * 批量插入students,classes,student_class
 	 * 
-	 * @param num 希望插入的数量
+	 * @param param 希望插入的数量
 	 * @throws BusinessException 业务异常
 	 */
-	void batch(int num) throws BusinessException;
+	void batch(Map<String, Integer> param) throws BusinessException;
 
 	/**
 	 * 清空表数据
@@ -66,4 +69,22 @@ public interface IStudentService {
 	 * @throws BusinessException 业务异常
 	 */
 	void truncate(List<String> tableNames) throws BusinessException;
+
+	/**
+	 * 分页查询
+	 * 
+	 * @param myPageInfo 分页参数
+	 * @return 返回分页数据
+	 * @throws BusinessException 业务异常
+	 */
+	MyPageInfo<Student> selectPageInfo(MyPageInfo<Student> myPageInfo) throws BusinessException;
+
+	/**
+	 * 分页查询
+	 * 
+	 * @param myPage 分页参数
+	 * @return 返回分页数据
+	 * @throws BusinessException 业务异常
+	 */
+	MyPage<Student> selectPage(MyPage<Student> myPage) throws BusinessException;
 }

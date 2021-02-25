@@ -1,5 +1,7 @@
 package com.example.interceptor;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,14 +43,26 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 		StringBuilder builder = new StringBuilder(CAPACITY);
 		StringBuilder multipartBuilder = new StringBuilder(CAPACITY);
 		if (method == HttpMethod.GET || method == HttpMethod.POST) {
-			builder.append(getParams(servletWebRequest));
-			String contentType = httpServletRequest.getContentType();
-			if (contentType.equalsIgnoreCase(MediaType.MULTIPART_FORM_DATA.getType())) {
-				multipartBuilder.append(getMultipartFilesInfo(servletWebRequest));
-				log.info("request-id:{},url:{},method:{},params:{},multipart-params:{}", requestId, url, method,
-						builder, multipartBuilder);
-			} else {
-				log.info("request-id:{},url:{},method:{},params:{}", requestId, url, method, builder);
+			// 解析参数
+			try {
+				builder.append(getParams(servletWebRequest));
+				String contentType = httpServletRequest.getContentType();
+				if (contentType.equalsIgnoreCase(MediaType.MULTIPART_FORM_DATA.getType())) {
+					multipartBuilder.append(getMultipartFilesInfo(servletWebRequest));
+					log.info("request-id:{},url:{},method:{},params:{},multipart-params:{}", requestId, url, method,
+							builder, multipartBuilder);
+				} else {
+					log.info("request-id:{},url:{},method:{},params:{}", requestId, url, method, builder);
+				}
+			} catch (Exception e) {
+				// 封装预处理错误，由于此处发生异常，导致afterCompletion方法无法执行而采取的补救措施
+				Map<String, Object> preHandleEx = new LinkedHashMap<>();
+				preHandleEx.put("request-id", requestId);
+				preHandleEx.put("url", url);
+				preHandleEx.put("method", method);
+				preHandleEx.put("exception", e);
+				httpServletRequest.setAttribute("preHandle", preHandleEx);
+				throw new BusinessException("parse param error");
 			}
 		} else {
 			throw new BusinessException("unsupported " + method + " method");
@@ -92,20 +106,24 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 	 * 
 	 * @param servletWebRequest 请求
 	 * @return 返回请求体
-	 * @throws Exception 异常
+	 * @throws BusinessException 异常
 	 */
-	private String getParams(ServletWebRequest servletWebRequest) throws Exception {
-		HttpMethod method = servletWebRequest.getHttpMethod();
-		HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
-		StringBuilder builder = new StringBuilder(CAPACITY);
-		if (method == HttpMethod.GET) {
-			builder.append(JSON.toJSONString(servletWebRequest.getParameterMap()));
-		} else if (method == HttpMethod.POST) {
-			RequestWrapperFacade requestWrapperFacade = new RequestWrapperFacade(httpServletRequest);
-			RequestWrapper requestWrapper = requestWrapperFacade.getRequestWrapper();
-			builder.append(requestWrapper.getRequestBody());
+	private String getParams(ServletWebRequest servletWebRequest) throws BusinessException {
+		try {
+			HttpMethod method = servletWebRequest.getHttpMethod();
+			HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
+			StringBuilder builder = new StringBuilder(CAPACITY);
+			if (method == HttpMethod.GET) {
+				builder.append(JSON.toJSONString(servletWebRequest.getParameterMap()));
+			} else if (method == HttpMethod.POST) {
+				RequestWrapperFacade requestWrapperFacade = new RequestWrapperFacade(httpServletRequest);
+				RequestWrapper requestWrapper = requestWrapperFacade.getRequestWrapper();
+				builder.append(requestWrapper.getRequestBody());
+			}
+			return builder.toString();
+		} catch (Exception e) {
+			throw new BusinessException(e);
 		}
-		return builder.toString();
 	}
 
 	/**
@@ -113,21 +131,25 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 	 * 
 	 * @param servletWebRequest 请求
 	 * @return 返回文件信息（文件名-文件大小的key-value对）
-	 * @throws Exception 异常
+	 * @throws BusinessException 异常
 	 */
-	private String getMultipartFilesInfo(ServletWebRequest servletWebRequest) throws Exception {
-		HttpMethod method = servletWebRequest.getHttpMethod();
-		HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
-		StringBuilder multipartBuilder = new StringBuilder(CAPACITY);
-		if (method == HttpMethod.POST) {
-			String contentType = httpServletRequest.getContentType();
-			RequestWrapperFacade requestWrapperFacade = new RequestWrapperFacade(httpServletRequest);
-			RequestWrapper requestWrapper = requestWrapperFacade.getRequestWrapper();
-			if (contentType.equalsIgnoreCase(MediaType.MULTIPART_FORM_DATA.getType())
-					&& requestWrapper.getMultipartFileListBody() != null) {
-				multipartBuilder.append(requestWrapper.getMultipartFileListBody());
+	private String getMultipartFilesInfo(ServletWebRequest servletWebRequest) throws BusinessException {
+		try {
+			HttpMethod method = servletWebRequest.getHttpMethod();
+			HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
+			StringBuilder multipartBuilder = new StringBuilder(CAPACITY);
+			if (method == HttpMethod.POST) {
+				String contentType = httpServletRequest.getContentType();
+				RequestWrapperFacade requestWrapperFacade = new RequestWrapperFacade(httpServletRequest);
+				RequestWrapper requestWrapper = requestWrapperFacade.getRequestWrapper();
+				if (contentType.equalsIgnoreCase(MediaType.MULTIPART_FORM_DATA.getType())
+						&& requestWrapper.getMultipartFileListBody() != null) {
+					multipartBuilder.append(requestWrapper.getMultipartFileListBody());
+				}
 			}
+			return multipartBuilder.toString();
+		} catch (Exception e) {
+			throw new BusinessException(e);
 		}
-		return multipartBuilder.toString();
 	}
 }

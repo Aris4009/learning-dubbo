@@ -44,4 +44,6 @@ public interface StudentDao {
 	 * @return
 	 */
 	int truncate(Map<String, String> map);
+
+	List<Student> selectPage(Student student);
 }

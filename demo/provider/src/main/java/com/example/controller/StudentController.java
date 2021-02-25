@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.db2.model.MyPage;
+import com.example.db2.model.MyPageInfo;
 import com.example.db2.model.Student;
 import com.example.db2.service.IStudentService;
 import com.example.exception.BusinessException;
@@ -121,9 +123,9 @@ public class StudentController {
 	 * @throws BusinessException 业务逻辑异常
 	 */
 	@PostMapping("/batch")
-	public ResponseEntity<Void> batch(@RequestBody Map<String, Integer> param) throws BusinessException {
-		studentService.batch(param.get("num"));
-		return new ResponseEntity<>(HttpStatus.OK);
+	public Response<Void> batch(@RequestBody Map<String, Integer> param) throws BusinessException {
+		studentService.batch(param);
+		return Response.OK(request);
 	}
 
 	/**
@@ -136,5 +138,30 @@ public class StudentController {
 	public Response<Void> truncate(@RequestBody List<String> tableNames) throws BusinessException {
 		studentService.truncate(tableNames);
 		return Response.OK(request);
+	}
+
+	/**
+	 * 分页查询
+	 * 
+	 * @param param 分页参数
+	 * @return 分页数据
+	 * @throws BusinessException 业务异常
+	 */
+	@PostMapping("/select/pageInfo")
+	public Response<MyPageInfo<Student>> selectPageInfo(@RequestBody MyPageInfo<Student> param)
+			throws BusinessException {
+		return Response.OK(studentService.selectPageInfo(param), request);
+	}
+
+	/**
+	 * 分页查询
+	 * 
+	 * @param param 分页参数
+	 * @return 分页数据
+	 * @throws BusinessException 业务异常
+	 */
+	@PostMapping("/select/page")
+	public Response<MyPage<Student>> selectPage(@RequestBody MyPage<Student> param) throws BusinessException {
+		return Response.OK(studentService.selectPage(param), request);
 	}
 }

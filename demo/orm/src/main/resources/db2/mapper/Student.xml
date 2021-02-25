@@ -42,7 +42,7 @@
         where id = #{id}
     </delete>
 
-    <insert id="batch" useGeneratedKeys="true">
+    <insert id="batch" useGeneratedKeys="true" keyProperty="id">
         insert into students(name,type)
         values
         <foreach collection="list" item="student" separator=",">
@@ -54,4 +54,20 @@
     <update id="truncate">
         truncate table ${tableName}
     </update>
+
+    <!-- 分页查询 -->
+    <select id="selectPage" resultType="com.example.db2.model.Student">
+        select *
+        from students
+        where 1=1
+        <if test="id !=null">
+            and id = #{id}
+        </if>
+        <if test="name !=null">
+            and name like "%"#{name}"%"
+        </if>
+        <if test="type !=null">
+            and type = #{type}
+        </if>
+    </select>
 </mapper>

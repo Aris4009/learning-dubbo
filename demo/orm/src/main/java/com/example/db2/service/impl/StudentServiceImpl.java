@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 import com.example.db2.dao.ClassesDao;
 import com.example.db2.dao.StudentClassDao;
 import com.example.db2.dao.StudentDao;
-import com.example.db2.model.Classes;
-import com.example.db2.model.Student;
-import com.example.db2.model.StudentClass;
+import com.example.db2.model.*;
 import com.example.db2.service.IStudentService;
 import com.example.exception.BusinessException;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 
 @Service
 public class StudentServiceImpl implements IStudentService {
@@ -73,7 +73,6 @@ public class StudentServiceImpl implements IStudentService {
 	public void transaction(Student student) throws BusinessException {
 		int code = -1;
 		SqlSession sqlSession = sqlSessionFactory.openSession();
-		sqlSession.commit(false);
 		try {
 			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
 			code = studentDao.add(student);
@@ -90,12 +89,15 @@ public class StudentServiceImpl implements IStudentService {
 	}
 
 	@Override
-	public void batch(int num) throws BusinessException {
+	public void batch(Map<String, Integer> param) throws BusinessException {
+		if (param == null || param.get("num") == null) {
+			throw BusinessException.paramsMustBeNotEmptyOrNullError("num");
+		}
+		int num = param.get("num");
 		if (num < 1 || num > 1000) {
 			throw BusinessException.paramsError("num", "必须在1~1000之间");
 		}
 		SqlSession sqlSession = sqlSessionFactory.openSession();
-		sqlSession.commit(false);
 		try {
 			List<Student> studentList = new ArrayList<>();
 			for (int i = 0; i < num; i++) {
@@ -142,8 +144,8 @@ public class StudentServiceImpl implements IStudentService {
 		if (tableNames == null || tableNames.isEmpty()) {
 			throw BusinessException.paramsMustBeNotEmptyOrNullError("tableNames");
 		}
-		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-			sqlSession.commit(false);
+		SqlSession sqlSession = sqlSessionFactory.openSession();
+		try {
 			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
 			tableNames.forEach(table -> {
 				Map<String, String> map = new HashMap<>();
@@ -151,6 +153,33 @@ public class StudentServiceImpl implements IStudentService {
 				studentDao.truncate(map);
 			});
 			sqlSession.commit();
+		} catch (Exception e) {
+			sqlSession.rollback();
+			throw e;
+		} finally {
+			sqlSession.close();
+		}
+	}
+
+	@Override
+	public MyPageInfo<Student> selectPageInfo(MyPageInfo<Student> myPageInfo) throws BusinessException {
+		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
+			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
+			final Student param = myPageInfo.getParam();
+			return myPageInfo = PageHelper.startPage(myPageInfo.getPageNum(), myPageInfo.getPageSize())
+					.doSelectPageInfo(() -> studentDao.selectPage(param));
+		}
+	}
+
+	@Override
+	public MyPage<Student> selectPage(MyPage<Student> myPage) throws BusinessException {
+		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
+			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
+			Page<Student> page = myPage.getPage();
+			page = PageHelper.startPage(page.getPageNum(), page.getPageSize())
+					.doSelectPage(() -> studentDao.selectPage(myPage.getParam()));
+			myPage.setPage(page);
+			return myPage;
 		}
 	}
 }
