@@ -1,8 +1,12 @@
 package com.example.db2.model;
 
+import java.io.Serializable;
+
 import com.example.json.JSON;
 
-public class Student {
+public class Student implements Serializable {
+
+	private static final long serialVersionUID = 5198598465867698816L;
 
 	/**
 	 * 主键

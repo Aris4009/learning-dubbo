@@ -12,11 +12,12 @@ import org.springframework.stereotype.Service;
 import com.example.db2.dao.ClassesDao;
 import com.example.db2.dao.StudentClassDao;
 import com.example.db2.dao.StudentDao;
-import com.example.db2.model.*;
+import com.example.db2.model.Classes;
+import com.example.db2.model.MyPage;
+import com.example.db2.model.Student;
+import com.example.db2.model.StudentClass;
 import com.example.db2.service.IStudentService;
 import com.example.exception.BusinessException;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 
 @Service
 public class StudentServiceImpl implements IStudentService {
@@ -162,24 +163,12 @@ public class StudentServiceImpl implements IStudentService {
 	}
 
 	@Override
-	public MyPageInfo<Student> selectPageInfo(MyPageInfo<Student> myPageInfo) throws BusinessException {
-		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
-			final Student param = myPageInfo.getParam();
-			return myPageInfo = PageHelper.startPage(myPageInfo.getPageNum(), myPageInfo.getPageSize())
-					.doSelectPageInfo(() -> studentDao.selectPage(param));
-		}
-	}
-
-	@Override
 	public MyPage<Student> selectPage(MyPage<Student> myPage) throws BusinessException {
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
 			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
-			Page<Student> page = myPage.getPage();
-			page = PageHelper.startPage(page.getPageNum(), page.getPageSize())
-					.doSelectPage(() -> studentDao.selectPage(myPage.getParam()));
-			myPage.setPage(page);
-			return myPage;
+			return myPage.doSelectPage(myPage, () -> {
+				studentDao.selectPage(myPage.getParam());
+			});
 		}
 	}
 }

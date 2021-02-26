@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.db2.model.MyPage;
-import com.example.db2.model.MyPageInfo;
 import com.example.db2.model.Student;
 import com.example.db2.service.IStudentService;
 import com.example.exception.BusinessException;
@@ -138,19 +137,6 @@ public class StudentController {
 	public Response<Void> truncate(@RequestBody List<String> tableNames) throws BusinessException {
 		studentService.truncate(tableNames);
 		return Response.OK(request);
-	}
-
-	/**
-	 * 分页查询
-	 * 
-	 * @param param 分页参数
-	 * @return 分页数据
-	 * @throws BusinessException 业务异常
-	 */
-	@PostMapping("/select/pageInfo")
-	public Response<MyPageInfo<Student>> selectPageInfo(@RequestBody MyPageInfo<Student> param)
-			throws BusinessException {
-		return Response.OK(studentService.selectPageInfo(param), request);
 	}
 
 	/**
