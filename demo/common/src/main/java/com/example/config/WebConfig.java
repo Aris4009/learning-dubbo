@@ -11,7 +11,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.example.interceptor.LogWebRequestInterceptor;
-import com.example.interceptor.ResponseInterceptor;
 import com.example.json.JSON;
 
 /**
@@ -36,7 +35,6 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addWebRequestInterceptor(new LogWebRequestInterceptor());
-		registry.addInterceptor(new ResponseInterceptor());
 	}
 
 }

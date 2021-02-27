@@ -1,19 +1,20 @@
 package com.example.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.db2.model.MyPageInfo;
 import com.example.db2.model.Student;
 import com.example.db2.service.IStudentService;
 import com.example.exception.BusinessException;
+import com.example.response.entity.Response;
 
 /**
  * 请求controller
@@ -39,8 +40,8 @@ public class StudentController {
 	 * @throws BusinessException 业务逻辑异常
 	 */
 	@PostMapping("/list")
-	public ResponseEntity<List<Student>> list(@RequestBody Student student) throws BusinessException {
-		return new ResponseEntity<>(studentService.list(student), HttpStatus.OK);
+	public Response<List<Student>> list(@RequestBody Student student) throws BusinessException {
+		return Response.ok(studentService.list(student), request);
 	}
 
 	/**
@@ -51,15 +52,9 @@ public class StudentController {
 	 * @throws BusinessException 业务逻辑异常
 	 */
 	@PostMapping("/add")
-	public ResponseEntity<Student> add(@RequestBody Student student) throws BusinessException {
-		ResponseEntity<Student> responseEntity;
-		int code = studentService.add(student);
-		if (code > 0) {
-			responseEntity = new ResponseEntity<>(student, HttpStatus.OK);
-		} else {
-			responseEntity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		return responseEntity;
+	public Response<Student> add(@RequestBody Student student) throws BusinessException {
+		studentService.add(student);
+		return Response.ok(student, request);
 	}
 
 	/**
@@ -70,15 +65,8 @@ public class StudentController {
 	 * @throws BusinessException 业务逻辑异常
 	 */
 	@PostMapping("/modify")
-	public ResponseEntity<Integer> modify(@RequestBody Student student) throws BusinessException {
-		ResponseEntity<Integer> responseEntity;
-		int code = studentService.modify(student);
-		if (code > 0) {
-			responseEntity = new ResponseEntity<>(code, HttpStatus.OK);
-		} else {
-			responseEntity = new ResponseEntity<>(code, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		return responseEntity;
+	public Response<Integer> modify(@RequestBody Student student) throws BusinessException {
+		return Response.ok(studentService.modify(student), request);
 	}
 
 	/**
@@ -89,15 +77,8 @@ public class StudentController {
 	 * @throws BusinessException 业务逻辑异常
 	 */
 	@PostMapping("/del")
-	public ResponseEntity<Integer> del(@RequestBody Student student) throws BusinessException {
-		ResponseEntity<Integer> responseEntity;
-		int code = studentService.del(student);
-		if (code > 0) {
-			responseEntity = new ResponseEntity<>(code, HttpStatus.OK);
-		} else {
-			responseEntity = new ResponseEntity<>(code, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		return responseEntity;
+	public Response<Integer> del(@RequestBody Student student) throws BusinessException {
+		return Response.ok(studentService.del(student), request);
 	}
 
 	/**
@@ -107,9 +88,9 @@ public class StudentController {
 	 * @throws BusinessException 业务逻辑异常
 	 */
 	@PostMapping("/transaction")
-	public ResponseEntity<Void> transaction(@RequestBody Student student) throws BusinessException {
+	public Response<Void> transaction(@RequestBody Student student) throws BusinessException {
 		studentService.transaction(student);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return Response.ok(request);
 	}
 
 	/**
@@ -118,11 +99,11 @@ public class StudentController {
 	 * @param param 批量插入数量
 	 * @throws BusinessException 业务逻辑异常
 	 */
-//	@PostMapping("/batch")
-//	public Response<Void> batch(@RequestBody Map<String, Integer> param) throws BusinessException {
-//		studentService.batch(param);
-//		return Response.ok(request);
-//	}
+	@PostMapping("/batch")
+	public Response<Void> batch(@RequestBody Map<String, Integer> param) throws BusinessException {
+		studentService.batch(param);
+		return Response.ok(request);
+	}
 
 	/**
 	 * 清空表
@@ -130,11 +111,11 @@ public class StudentController {
 	 * @param tableNames 清空表
 	 * @throws BusinessException 业务逻辑异常
 	 */
-//	@PostMapping("/truncate")
-//	public Response<Void> truncate(@RequestBody List<String> tableNames) throws BusinessException {
-//		studentService.truncate(tableNames);
-//		return Response.ok(request);
-//	}
+	@PostMapping("/truncate")
+	public Response<Void> truncate(@RequestBody List<String> tableNames) throws BusinessException {
+		studentService.truncate(tableNames);
+		return Response.ok(request);
+	}
 
 	/**
 	 * 分页查询
@@ -143,10 +124,9 @@ public class StudentController {
 	 * @return 分页数据
 	 * @throws BusinessException 业务异常
 	 */
-//	@PostMapping("/select/page")
-//	public Response<MyPageInfo<Student>> selectPage(@RequestBody MyPageInfo<Student> myPageInfo)
-//			throws BusinessException {
-//
-//		return Response.ok(studentService.selectPage(myPageInfo), request);
-//	}
+	@PostMapping("/select/page")
+	public Response<MyPageInfo<Student>> selectPage(@RequestBody MyPageInfo<Student> myPageInfo)
+			throws BusinessException {
+		return Response.ok(studentService.selectPage(myPageInfo), request);
+	}
 }

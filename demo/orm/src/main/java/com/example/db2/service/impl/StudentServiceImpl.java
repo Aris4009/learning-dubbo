@@ -33,40 +33,44 @@ public class StudentServiceImpl implements IStudentService {
 	@Override
 	public List<Student> list(Student student) throws BusinessException {
 		List<Student> list = null;
+		StudentDao studentDao;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
-			list = studentDao.list(student);
+			studentDao = sqlSession.getMapper(StudentDao.class);
 		}
+		list = studentDao.list(student);
 		return list;
 	}
 
 	@Override
 	public int add(Student student) throws BusinessException {
 		int code = -1;
+		StudentDao studentDao;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
-			code = studentDao.add(student);
+			studentDao = sqlSession.getMapper(StudentDao.class);
 		}
+		code = studentDao.add(student);
 		return code;
 	}
 
 	@Override
 	public int modify(Student student) throws BusinessException {
 		int code = -1;
+		StudentDao studentDao;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
-			code = studentDao.modify(student);
+			studentDao = sqlSession.getMapper(StudentDao.class);
 		}
+		code = studentDao.modify(student);
 		return code;
 	}
 
 	@Override
 	public int del(Student student) throws BusinessException {
 		int code = -1;
+		StudentDao studentDao;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
-			code = studentDao.del(student);
+			studentDao = sqlSession.getMapper(StudentDao.class);
 		}
+		code = studentDao.del(student);
 		return code;
 	}
 
@@ -164,9 +168,10 @@ public class StudentServiceImpl implements IStudentService {
 
 	@Override
 	public MyPageInfo<Student> selectPage(MyPageInfo<Student> myPageInfo) throws BusinessException {
+		StudentDao studentDao;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
-			return MyPageInfo.page(myPageInfo, () -> studentDao.selectPage(myPageInfo.getParam()));
+			studentDao = sqlSession.getMapper(StudentDao.class);
 		}
+		return MyPageInfo.page(myPageInfo, () -> studentDao.selectPage(myPageInfo.getParam()));
 	}
 }

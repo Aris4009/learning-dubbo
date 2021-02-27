@@ -36,6 +36,7 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 		String requestId = UUID.randomUUID().toString();
 		httpServletRequest.setAttribute("request-id", requestId);
 		String url = httpServletRequest.getRequestURI();
+		httpServletRequest.setAttribute("url", url);
 		if (url.equals("/error")) {
 			return;
 		}

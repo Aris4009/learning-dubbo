@@ -12,13 +12,25 @@ import lombok.Data;
 @Data
 public class MyPageInfo<T extends Serializable> {
 
-	private T param;
+	private transient T param;
 
 	private List<T> list;
 
 	private int pageNum = 1;
 
 	private int pageSize = 10;
+
+	private long total = 0;
+
+	private int pages = 0;
+
+	public int getPageSize() {
+		if (this.pageSize > 100) {
+			return 100;
+		} else {
+			return this.pageSize;
+		}
+	}
 
 	/**
 	 * 分页方法
@@ -34,6 +46,8 @@ public class MyPageInfo<T extends Serializable> {
 		pageInfo.setPageSize(myPageInfo.getPageSize());
 		pageInfo = PageMethod.startPage(pageInfo.getPageNum(), pageInfo.getPageSize()).doSelectPageInfo(select);
 		myPageInfo.setList(pageInfo.getList());
+		myPageInfo.setTotal(pageInfo.getTotal());
+		myPageInfo.setPages(pageInfo.getPages());
 		return myPageInfo;
 	}
 }

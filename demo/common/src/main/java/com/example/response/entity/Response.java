@@ -32,10 +32,10 @@ public final class Response<T> {
 	 * @param <T>  泛型参数
 	 * @return 响应体
 	 */
-	public static <T> Response<T> OK(T data) {
+	public static <T> Response<T> ok(T data) {
 		String path = null;
 		String[] msg = null;
-		return OK(data, path, msg);
+		return ok(data, path, msg);
 	}
 
 	/**
@@ -46,8 +46,8 @@ public final class Response<T> {
 	 * @param <T>     泛型参数
 	 * @return 响应体
 	 */
-	public static <T> Response<T> OK(T data, HttpServletRequest request) {
-		return OK(data, request, null);
+	public static <T> Response<T> ok(T data, HttpServletRequest request) {
+		return ok(data, request, null);
 	}
 
 	/**
@@ -59,16 +59,16 @@ public final class Response<T> {
 	 * @param <T>     泛型参数
 	 * @return 响应体
 	 */
-	public static <T> Response<T> OK(T data, HttpServletRequest request, String[] msg) {
-		return OK(data, request.getRequestURI(), msg);
+	public static <T> Response<T> ok(T data, HttpServletRequest request, String[] msg) {
+		return ok(data, request.getRequestURI(), msg);
 	}
 
-	public static Response<Void> OK(HttpServletRequest request, String[] msg) {
-		return OK(null, request, msg);
+	public static Response<Void> ok(HttpServletRequest request, String[] msg) {
+		return ok(null, request, msg);
 	}
 
-	public static Response<Void> OK(HttpServletRequest request) {
-		return OK(null, request, null);
+	public static Response<Void> ok(HttpServletRequest request) {
+		return ok(null, request, null);
 	}
 
 	/**
@@ -79,8 +79,8 @@ public final class Response<T> {
 	 * @param <T>     泛型参数
 	 * @return 响应体
 	 */
-	public static <T> Response<T> OK(T data, NativeWebRequest request) {
-		return OK(data, request, null);
+	public static <T> Response<T> ok(T data, NativeWebRequest request) {
+		return ok(data, request, null);
 	}
 
 	/**
@@ -92,20 +92,20 @@ public final class Response<T> {
 	 * @param <T>     泛型参数
 	 * @return 响应体
 	 */
-	public static <T> Response<T> OK(T data, NativeWebRequest request, String[] msg) {
-		return OK(data, (HttpServletRequest) request.getNativeRequest(), msg);
+	public static <T> Response<T> ok(T data, NativeWebRequest request, String[] msg) {
+		return ok(data, (HttpServletRequest) request.getNativeRequest(), msg);
 	}
 
-	public static Response<Void> OK(NativeWebRequest request, String[] msg) {
-		return OK(null, request, msg);
+	public static Response<Void> ok(NativeWebRequest request, String[] msg) {
+		return ok(null, request, msg);
 	}
 
-	public static Response<Void> OK(NativeWebRequest request) {
-		return OK(null, request, null);
+	public static Response<Void> ok(NativeWebRequest request) {
+		return ok(null, request, null);
 	}
 
-	public static Response<Void> OK(String path, String[] msg) {
-		return OK(null, path, msg);
+	public static Response<Void> ok(String path, String[] msg) {
+		return ok(null, path, msg);
 	}
 
 	/**
@@ -118,7 +118,7 @@ public final class Response<T> {
 	 * @return 响应体
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> Response<T> OK(T data, String path, String[] msg) {
+	public static <T> Response<T> ok(T data, String path, String[] msg) {
 		String s = null;
 		if (msg != null && msg.length > 0) {
 			StringBuilder builder = new StringBuilder();
