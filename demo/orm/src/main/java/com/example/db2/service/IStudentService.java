@@ -3,7 +3,7 @@ package com.example.db2.service;
 import java.util.List;
 import java.util.Map;
 
-import com.example.db2.model.MyPage;
+import com.example.db2.model.MyPageInfo;
 import com.example.db2.model.Student;
 import com.example.exception.BusinessException;
 
@@ -72,9 +72,9 @@ public interface IStudentService {
 	/**
 	 * 分页查询
 	 * 
-	 * @param myPage 分页参数
+	 * @param myPageInfo 分页参数
 	 * @return 返回分页数据
 	 * @throws BusinessException 业务异常
 	 */
-	MyPage<Student> selectPage(MyPage<Student> myPage) throws BusinessException;
+	MyPageInfo<Student> selectPage(MyPageInfo<Student> myPageInfo) throws BusinessException;
 }

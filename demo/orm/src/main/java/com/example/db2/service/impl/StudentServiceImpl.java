@@ -13,7 +13,7 @@ import com.example.db2.dao.ClassesDao;
 import com.example.db2.dao.StudentClassDao;
 import com.example.db2.dao.StudentDao;
 import com.example.db2.model.Classes;
-import com.example.db2.model.MyPage;
+import com.example.db2.model.MyPageInfo;
 import com.example.db2.model.Student;
 import com.example.db2.model.StudentClass;
 import com.example.db2.service.IStudentService;
@@ -163,12 +163,10 @@ public class StudentServiceImpl implements IStudentService {
 	}
 
 	@Override
-	public MyPage<Student> selectPage(MyPage<Student> myPage) throws BusinessException {
+	public MyPageInfo<Student> selectPage(MyPageInfo<Student> myPageInfo) throws BusinessException {
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
 			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
-			return myPage.doSelectPage(myPage, () -> {
-				studentDao.selectPage(myPage.getParam());
-			});
+			return MyPageInfo.page(myPageInfo, () -> studentDao.selectPage(myPageInfo.getParam()));
 		}
 	}
 }

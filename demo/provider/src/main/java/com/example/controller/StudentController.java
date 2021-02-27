@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,11 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.db2.model.MyPage;
 import com.example.db2.model.Student;
 import com.example.db2.service.IStudentService;
 import com.example.exception.BusinessException;
-import com.example.response.entity.Response;
 
 /**
  * 请求controller
@@ -121,11 +118,11 @@ public class StudentController {
 	 * @param param 批量插入数量
 	 * @throws BusinessException 业务逻辑异常
 	 */
-	@PostMapping("/batch")
-	public Response<Void> batch(@RequestBody Map<String, Integer> param) throws BusinessException {
-		studentService.batch(param);
-		return Response.OK(request);
-	}
+//	@PostMapping("/batch")
+//	public Response<Void> batch(@RequestBody Map<String, Integer> param) throws BusinessException {
+//		studentService.batch(param);
+//		return Response.ok(request);
+//	}
 
 	/**
 	 * 清空表
@@ -133,21 +130,23 @@ public class StudentController {
 	 * @param tableNames 清空表
 	 * @throws BusinessException 业务逻辑异常
 	 */
-	@PostMapping("/truncate")
-	public Response<Void> truncate(@RequestBody List<String> tableNames) throws BusinessException {
-		studentService.truncate(tableNames);
-		return Response.OK(request);
-	}
+//	@PostMapping("/truncate")
+//	public Response<Void> truncate(@RequestBody List<String> tableNames) throws BusinessException {
+//		studentService.truncate(tableNames);
+//		return Response.ok(request);
+//	}
 
 	/**
 	 * 分页查询
 	 * 
-	 * @param param 分页参数
+	 * @param myPageInfo 分页参数
 	 * @return 分页数据
 	 * @throws BusinessException 业务异常
 	 */
-	@PostMapping("/select/page")
-	public Response<MyPage<Student>> selectPage(@RequestBody MyPage<Student> param) throws BusinessException {
-		return Response.OK(studentService.selectPage(param), request);
-	}
+//	@PostMapping("/select/page")
+//	public Response<MyPageInfo<Student>> selectPage(@RequestBody MyPageInfo<Student> myPageInfo)
+//			throws BusinessException {
+//
+//		return Response.ok(studentService.selectPage(myPageInfo), request);
+//	}
 }

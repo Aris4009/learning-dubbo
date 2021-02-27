@@ -23,6 +23,8 @@ public final class Response<T> {
 
 	private String timestamp;
 
+	private Object param;
+
 	/**
 	 * 返回通用响应对象
 	 * 
