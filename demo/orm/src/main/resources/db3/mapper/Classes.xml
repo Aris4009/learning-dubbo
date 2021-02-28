@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.db3.dao.ClassMapper">
+    <select id="list" resultType="com.example.db2.model.Classes">
+        select *
+        from classes
+        <where>
+            <if test="id !=null">
+                and id = #{id}
+            </if>
+            <if test="className !=null">
+                and classes_name like "%"#{className}"%"
+            </if>
+        </where>
+    </select>
+
+    <insert id="add" useGeneratedKeys="true">
+        insert into classes(classes_name)
+        values (#{className})
+    </insert>
+
+    <update id="modify">
+        update classes
+        <set>
+            <if test="className != null">
+                classes_name = #{className},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="del">
+        delete
+        from classes
+        where id = #{id}
+    </delete>
+
+    <insert id="batch" useGeneratedKeys="true" keyProperty="id">
+        insert into classes(class_name)
+        values
+        <foreach collection="list" item="cls" separator=",">
+            (#{cls.className})
+        </foreach>
+    </insert>
+</mapper>

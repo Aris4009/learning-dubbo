@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.db2.model.MyPageInfo;
 import com.example.db2.model.Student;
 import com.example.db2.service.IStudentService;
+import com.example.db3.service.IService;
 import com.example.exception.BusinessException;
 import com.example.response.entity.Response;
 
@@ -25,10 +26,13 @@ public class StudentController {
 
 	private final IStudentService studentService;
 
+	private final IService serviceImpl;
+
 	private final HttpServletRequest request;
 
-	public StudentController(IStudentService studentService, HttpServletRequest request) {
+	public StudentController(IStudentService studentService, IService serviceImpl, HttpServletRequest request) {
 		this.studentService = studentService;
+		this.serviceImpl = serviceImpl;
 		this.request = request;
 	}
 
@@ -117,5 +121,17 @@ public class StudentController {
 	public Response<MyPageInfo<Student>> selectPage(@RequestBody MyPageInfo<Student> myPageInfo)
 			throws BusinessException {
 		return Response.ok(studentService.selectPage(myPageInfo), request);
+	}
+
+	/**
+	 * db3-批量插入
+	 *
+	 * @param param 批量插入数量
+	 * @throws BusinessException 业务逻辑异常
+	 */
+	@PostMapping("/db3/batch")
+	public Response<Void> db3Batch(@RequestBody Map<String, Integer> param) throws BusinessException {
+		serviceImpl.batch(param);
+		return Response.ok(request);
 	}
 }
