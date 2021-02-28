@@ -46,14 +46,6 @@ public interface IStudentService {
 	int del(Student student) throws BusinessException;
 
 	/**
-	 * 测试事务
-	 * 
-	 * @param student 请求参数
-	 * @throws BusinessException 业务异常
-	 */
-	void transaction(Student student) throws BusinessException;
-
-	/**
 	 * 批量插入students,classes,student_class
 	 * 
 	 * @param param 希望插入的数量

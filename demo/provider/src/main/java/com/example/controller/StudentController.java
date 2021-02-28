@@ -65,8 +65,9 @@ public class StudentController {
 	 * @throws BusinessException 业务逻辑异常
 	 */
 	@PostMapping("/modify")
-	public Response<Integer> modify(@RequestBody Student student) throws BusinessException {
-		return Response.ok(studentService.modify(student), request);
+	public Response<Student> modify(@RequestBody Student student) throws BusinessException {
+		studentService.modify(student);
+		return Response.ok(student, request);
 	}
 
 	/**
@@ -76,21 +77,9 @@ public class StudentController {
 	 * @return 影响行数
 	 * @throws BusinessException 业务逻辑异常
 	 */
-	@PostMapping("/del")
+	@PostMapping("/delete")
 	public Response<Integer> del(@RequestBody Student student) throws BusinessException {
 		return Response.ok(studentService.del(student), request);
-	}
-
-	/**
-	 * 测试事务
-	 * 
-	 * @param student 参数
-	 * @throws BusinessException 业务逻辑异常
-	 */
-	@PostMapping("/transaction")
-	public Response<Void> transaction(@RequestBody Student student) throws BusinessException {
-		studentService.transaction(student);
-		return Response.ok(request);
 	}
 
 	/**

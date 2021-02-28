@@ -43,54 +43,50 @@ public class StudentServiceImpl implements IStudentService {
 
 	@Override
 	public int add(Student student) throws BusinessException {
-		int code = -1;
-		StudentDao studentDao;
-		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-			studentDao = sqlSession.getMapper(StudentDao.class);
+		if (student.getName() == null || student.getType() == null) {
+			throw BusinessException.paramsMustBeNotEmptyOrNullError("name", "type");
 		}
-		code = studentDao.add(student);
+		int code = -1;
+		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
+			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
+			code = studentDao.add(student);
+			sqlSession.commit();
+		}
 		return code;
 	}
 
 	@Override
 	public int modify(Student student) throws BusinessException {
-		int code = -1;
-		StudentDao studentDao;
-		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-			studentDao = sqlSession.getMapper(StudentDao.class);
+		if (student.getId() == null || (student.getName() == null && student.getType() == null)) {
+			throw BusinessException.paramsMustBeNotEmptyOrNullError("id", "name", "type");
 		}
-		code = studentDao.modify(student);
+		int code = -1;
+		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
+			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
+			code = studentDao.modify(student);
+			sqlSession.commit();
+			if (code < 1) {
+				throw new BusinessException("There is no data for modify");
+			}
+		}
 		return code;
 	}
 
 	@Override
 	public int del(Student student) throws BusinessException {
+		if (student.getId() == null) {
+			throw BusinessException.paramsMustBeNotEmptyOrNullError("id");
+		}
 		int code = -1;
-		StudentDao studentDao;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-			studentDao = sqlSession.getMapper(StudentDao.class);
-		}
-		code = studentDao.del(student);
-		return code;
-	}
-
-	@Override
-	public void transaction(Student student) throws BusinessException {
-		int code = -1;
-		SqlSession sqlSession = sqlSessionFactory.openSession();
-		try {
 			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
-			code = studentDao.add(student);
-			log.info("执行插入:{}", code);
-			code = studentDao.modify(student);
-			log.info("执行修改:{}", code);
+			code = studentDao.del(student);
 			sqlSession.commit();
-		} catch (Exception e) {
-			sqlSession.rollback();
-			throw e;
-		} finally {
-			sqlSession.close();
+			if (code < 1) {
+				throw new BusinessException("There is no data for delete");
+			}
 		}
+		return code;
 	}
 
 	@Override
@@ -168,10 +164,9 @@ public class StudentServiceImpl implements IStudentService {
 
 	@Override
 	public MyPageInfo<Student> selectPage(MyPageInfo<Student> myPageInfo) throws BusinessException {
-		StudentDao studentDao;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-			studentDao = sqlSession.getMapper(StudentDao.class);
+			StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
+			return MyPageInfo.page(myPageInfo, () -> studentDao.selectPage(myPageInfo.getParam()));
 		}
-		return MyPageInfo.page(myPageInfo, () -> studentDao.selectPage(myPageInfo.getParam()));
 	}
 }

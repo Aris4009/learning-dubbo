@@ -18,7 +18,7 @@
         </if>
     </select>
 
-    <insert id="add" useGeneratedKeys="true">
+    <insert id="add" useGeneratedKeys="true" keyProperty="id">
         insert into students(name, type)
         values (#{name}, #{type})
     </insert>
