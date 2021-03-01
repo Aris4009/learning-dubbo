@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.db2.model.MyPageInfo;
 import com.example.db2.model.Student;
@@ -133,5 +135,16 @@ public class StudentController {
 	public Response<Void> db3Batch(@RequestBody Map<String, Integer> param) throws BusinessException {
 		serviceImpl.batch(param);
 		return Response.ok(request);
+	}
+
+	@PostMapping("/upload")
+	public Response<Map<String, Object>> upload(MultipartFile file) throws BusinessException {
+		if (file == null) {
+			throw BusinessException.paramsError("file");
+		}
+		Map<String, Object> map = new HashMap<>();
+		map.put("filename", file.getOriginalFilename());
+		map.put("size", file.getSize());
+		return Response.ok(map, request);
 	}
 }

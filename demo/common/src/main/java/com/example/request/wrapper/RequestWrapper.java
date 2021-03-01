@@ -57,30 +57,31 @@ public class RequestWrapper extends HttpServletRequestWrapper {
 		}
 		if (builder.length() > 0) {
 			this.requestBody = builder.toString();
+			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.requestBody.getBytes());
+			return new ServletInputStream() {
+				@Override
+				public boolean isFinished() {
+					return false;
+				}
+
+				@Override
+				public boolean isReady() {
+					return true;
+				}
+
+				@Override
+				public void setReadListener(ReadListener listener) {
+					throw new UnsupportedOperationException();
+				}
+
+				@Override
+				public int read() throws IOException {
+					return byteArrayInputStream.read();
+				}
+			};
+		} else {
+			return null;
 		}
-
-		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.requestBody.getBytes());
-		return new ServletInputStream() {
-			@Override
-			public boolean isFinished() {
-				return false;
-			}
-
-			@Override
-			public boolean isReady() {
-				return true;
-			}
-
-			@Override
-			public void setReadListener(ReadListener listener) {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public int read() throws IOException {
-				return byteArrayInputStream.read();
-			}
-		};
 	}
 
 	@Override

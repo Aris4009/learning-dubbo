@@ -19,6 +19,7 @@ import com.example.exception.BusinessException;
 import com.example.json.JSON;
 import com.example.request.wrapper.RequestWrapper;
 import com.example.request.wrapper.RequestWrapperFacade;
+import com.example.request.wrapper.UnWrapHttpServletRequestWrapper;
 
 /**
  * 日志请求参数拦截器
@@ -32,7 +33,7 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 	@Override
 	public void preHandle(WebRequest request) throws Exception {
 		ServletWebRequest servletWebRequest = (ServletWebRequest) request;
-		HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
+		HttpServletRequest httpServletRequest = UnWrapHttpServletRequestWrapper.unwrap(servletWebRequest.getRequest());
 		String requestId = UUID.randomUUID().toString();
 		httpServletRequest.setAttribute("request-id", requestId);
 		String url = httpServletRequest.getRequestURI();
@@ -46,16 +47,17 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 		if (method == HttpMethod.GET || method == HttpMethod.POST) {
 			// 解析参数
 			try {
-				builder.append(getParams(servletWebRequest));
+				builder.append(getParams(httpServletRequest, method));
 				String contentType = httpServletRequest.getContentType();
-				if (contentType.equalsIgnoreCase(MediaType.MULTIPART_FORM_DATA.getType())) {
-					multipartBuilder.append(getMultipartFilesInfo(servletWebRequest));
+				if (contentType.contains(MediaType.MULTIPART_FORM_DATA.getType())) {
+					multipartBuilder.append(getMultipartFilesInfo(httpServletRequest, method));
 					log.info("request-id:{},url:{},method:{},params:{},multipart-params:{}", requestId, url, method,
 							builder, multipartBuilder);
 				} else {
 					log.info("request-id:{},url:{},method:{},params:{}", requestId, url, method, builder);
 				}
 			} catch (Exception e) {
+				log.error(e.getMessage(), e);
 				// 封装预处理错误，由于此处发生异常，导致afterCompletion方法无法执行而采取的补救措施
 				Map<String, Object> preHandleEx = new LinkedHashMap<>();
 				preHandleEx.put("request-id", requestId);
@@ -78,7 +80,7 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 	@Override
 	public void afterCompletion(WebRequest request, Exception ex) throws Exception {
 		ServletWebRequest servletWebRequest = (ServletWebRequest) request;
-		HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
+		HttpServletRequest httpServletRequest = UnWrapHttpServletRequestWrapper.unwrap(servletWebRequest.getRequest());
 		Object obj = httpServletRequest.getAttribute("ex");
 		if (obj == null) {
 			return;
@@ -90,10 +92,10 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 		StringBuilder builder = new StringBuilder(CAPACITY);
 		StringBuilder multipartBuilder = new StringBuilder(CAPACITY);
 		if (method == HttpMethod.GET || method == HttpMethod.POST) {
-			builder.append(getParams(servletWebRequest));
+			builder.append(getParams(httpServletRequest, method));
 			String contentType = httpServletRequest.getContentType();
 			if (contentType.equalsIgnoreCase(MediaType.MULTIPART_FORM_DATA.getType())) {
-				multipartBuilder.append(getMultipartFilesInfo(servletWebRequest));
+				multipartBuilder.append(getMultipartFilesInfo(httpServletRequest, method));
 				log.error("request-id:{},url:{},method:{},params:{},multipart-params:{}", requestId, url, method,
 						builder, multipartBuilder, exception);
 			} else {
@@ -105,17 +107,16 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 	/**
 	 * 获取GET/POST方法请求参数
 	 * 
-	 * @param servletWebRequest 请求
+	 * @param httpServletRequest 原始请求，没有被HttpServletRequestWrapper包装
+	 * @param method             HttpMethod
 	 * @return 返回请求体
 	 * @throws BusinessException 异常
 	 */
-	private String getParams(ServletWebRequest servletWebRequest) throws BusinessException {
+	private String getParams(HttpServletRequest httpServletRequest, HttpMethod method) throws BusinessException {
 		try {
-			HttpMethod method = servletWebRequest.getHttpMethod();
-			HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
 			StringBuilder builder = new StringBuilder(CAPACITY);
 			if (method == HttpMethod.GET) {
-				builder.append(JSON.toJSONString(servletWebRequest.getParameterMap()));
+				builder.append(JSON.toJSONString(httpServletRequest.getParameterMap()));
 			} else if (method == HttpMethod.POST) {
 				RequestWrapperFacade requestWrapperFacade = new RequestWrapperFacade(httpServletRequest);
 				RequestWrapper requestWrapper = requestWrapperFacade.getRequestWrapper();
@@ -130,14 +131,14 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 	/**
 	 * 获取POST multipart/form-data中上传的文件信息
 	 * 
-	 * @param servletWebRequest 请求
+	 * @param httpServletRequest 原始请求，没有被HttpServletRequestWrapper包装
+	 * @param method             HttpMethod
 	 * @return 返回文件信息（文件名-文件大小的key-value对）
 	 * @throws BusinessException 异常
 	 */
-	private String getMultipartFilesInfo(ServletWebRequest servletWebRequest) throws BusinessException {
+	private String getMultipartFilesInfo(HttpServletRequest httpServletRequest, HttpMethod method)
+			throws BusinessException {
 		try {
-			HttpMethod method = servletWebRequest.getHttpMethod();
-			HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
 			StringBuilder multipartBuilder = new StringBuilder(CAPACITY);
 			if (method == HttpMethod.POST) {
 				String contentType = httpServletRequest.getContentType();

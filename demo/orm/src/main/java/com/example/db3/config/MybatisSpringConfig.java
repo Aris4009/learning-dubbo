@@ -4,7 +4,7 @@ import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
-import org.mybatis.spring.mapper.MapperScannerConfigurer;
+import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,6 +25,7 @@ import com.zaxxer.hikari.HikariDataSource;
  */
 @Configuration
 @PropertySource(value = { "classpath:db3/db.properties" })
+@MapperScan(basePackages = { "com.example.db3.dao" }, sqlSessionFactoryRef = "ssf3")
 public class MybatisSpringConfig {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -58,11 +59,16 @@ public class MybatisSpringConfig {
 		return sqlSessionFactoryBean.getObject();
 	}
 
-	@Bean("mapperScannerConfigurer3")
-	public MapperScannerConfigurer mapperScannerConfigurer() {
-		MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
-		mapperScannerConfigurer.setBasePackage("com.example.db3.dao");
-		mapperScannerConfigurer.setSqlSessionFactoryBeanName("ssf3");
-		return mapperScannerConfigurer;
-	}
+	/**
+	 * 存在多个sqlSessionFactory，需要单独指定。也可以通过注解实现
+	 * 
+	 * @return
+	 */
+//	@Bean("mapperScannerConfigurer3")
+//	public MapperScannerConfigurer mapperScannerConfigurer() {
+//		MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
+//		mapperScannerConfigurer.setBasePackage("com.example.db3.dao");
+//		mapperScannerConfigurer.setSqlSessionFactoryBeanName("ssf3");
+//		return mapperScannerConfigurer;
+//	}
 }
