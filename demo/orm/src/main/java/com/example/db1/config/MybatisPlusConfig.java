@@ -4,7 +4,6 @@ import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
-import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -24,7 +23,6 @@ import com.zaxxer.hikari.HikariDataSource;
  * 构建MybatisPlus配置
  */
 @Configuration
-@MapperScan("db1/mapper/*.xml")
 @PropertySource(value = "classpath:db1/mybatisPlus.properties")
 public class MybatisPlusConfig {
 
