@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.example.interceptor.LogWebRequestInterceptor;
+import com.example.interceptor.LogHandlerInterceptor;
 import com.example.json.JSON;
 
 /**
@@ -19,10 +19,10 @@ import com.example.json.JSON;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-	private final RequestLogConfig.RequestLog requestLog;
+	private final RequestLogConfig requestLogConfig;
 
-	public WebConfig(RequestLogConfig.RequestLog requestLog) {
-		this.requestLog = requestLog;
+	public WebConfig(RequestLogConfig requestLogConfig) {
+		this.requestLogConfig = requestLogConfig;
 	}
 
 	@Override
@@ -40,7 +40,6 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addWebRequestInterceptor(new LogWebRequestInterceptor(this.requestLog));
+		registry.addInterceptor(new LogHandlerInterceptor(this.requestLogConfig));
 	}
-
 }
