@@ -15,6 +15,7 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.WebRequestInterceptor;
 
+import com.example.config.RequestLogConfig;
 import com.example.exception.BusinessException;
 import com.example.json.JSON;
 import com.example.request.wrapper.RequestWrapper;
@@ -26,6 +27,12 @@ import com.example.request.wrapper.UnWrapHttpServletRequestWrapper;
  */
 public class LogWebRequestInterceptor implements WebRequestInterceptor {
 
+	private final RequestLogConfig.RequestLog requestLog;
+
+	public LogWebRequestInterceptor(RequestLogConfig.RequestLog requestLog) {
+		this.requestLog = requestLog;
+	}
+
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private static final int CAPACITY = 1024;
@@ -33,6 +40,11 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 	@Override
 	public void preHandle(WebRequest request) throws Exception {
 		ServletWebRequest servletWebRequest = (ServletWebRequest) request;
+		HttpMethod method = servletWebRequest.getHttpMethod();
+		if (method != HttpMethod.GET && method != HttpMethod.POST) {
+			throw new BusinessException("unsupported " + method + " method");
+		}
+
 		HttpServletRequest httpServletRequest = UnWrapHttpServletRequestWrapper.unwrap(servletWebRequest.getRequest());
 		String requestId = UUID.randomUUID().toString();
 		httpServletRequest.setAttribute("request-id", requestId);
@@ -41,34 +53,33 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 		if (url.equals("/error")) {
 			return;
 		}
-		HttpMethod method = servletWebRequest.getHttpMethod();
 		StringBuilder builder = new StringBuilder(CAPACITY);
 		StringBuilder multipartBuilder = new StringBuilder(CAPACITY);
-		if (method == HttpMethod.GET || method == HttpMethod.POST) {
-			// 解析参数
-			try {
-				builder.append(getParams(httpServletRequest, method));
-				String contentType = httpServletRequest.getContentType();
-				if (contentType.contains(MediaType.MULTIPART_FORM_DATA.getType())) {
-					multipartBuilder.append(getMultipartFilesInfo(httpServletRequest, method));
+		// 解析参数
+		try {
+			builder.append(getParams(httpServletRequest, method));
+			String contentType = httpServletRequest.getContentType();
+			if (contentType != null && contentType.contains(MediaType.MULTIPART_FORM_DATA.getType())) {
+				multipartBuilder.append(getMultipartFilesInfo(httpServletRequest, method));
+				if (requestLog.isPre()) {
 					log.info("request-id:{},url:{},method:{},params:{},multipart-params:{}", requestId, url, method,
 							builder, multipartBuilder);
-				} else {
+				}
+			} else {
+				if (requestLog.isPre()) {
 					log.info("request-id:{},url:{},method:{},params:{}", requestId, url, method, builder);
 				}
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-				// 封装预处理错误，由于此处发生异常，导致afterCompletion方法无法执行而采取的补救措施
-				Map<String, Object> preHandleEx = new LinkedHashMap<>();
-				preHandleEx.put("request-id", requestId);
-				preHandleEx.put("url", url);
-				preHandleEx.put("method", method);
-				preHandleEx.put("exception", e);
-				httpServletRequest.setAttribute("preHandle", preHandleEx);
-				throw new BusinessException("parse param error");
 			}
-		} else {
-			throw new BusinessException("unsupported " + method + " method");
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			// 封装预处理错误，由于此处发生异常，导致afterCompletion方法无法执行而采取的补救措施
+			Map<String, Object> preHandleEx = new LinkedHashMap<>();
+			preHandleEx.put("request-id", requestId);
+			preHandleEx.put("url", url);
+			preHandleEx.put("method", method);
+			preHandleEx.put("exception", e);
+			httpServletRequest.setAttribute("preHandle", preHandleEx);
+			throw new BusinessException("parse param error");
 		}
 	}
 
@@ -80,26 +91,34 @@ public class LogWebRequestInterceptor implements WebRequestInterceptor {
 	@Override
 	public void afterCompletion(WebRequest request, Exception ex) throws Exception {
 		ServletWebRequest servletWebRequest = (ServletWebRequest) request;
-		HttpServletRequest httpServletRequest = UnWrapHttpServletRequestWrapper.unwrap(servletWebRequest.getRequest());
-		Object obj = httpServletRequest.getAttribute("ex");
-		if (obj == null) {
+		HttpMethod method = servletWebRequest.getHttpMethod();
+		if (method != HttpMethod.GET && method != HttpMethod.POST) {
 			return;
 		}
+
+		HttpServletRequest httpServletRequest = UnWrapHttpServletRequestWrapper.unwrap(servletWebRequest.getRequest());
 		String requestId = (String) httpServletRequest.getAttribute("request-id");
-		Exception exception = (Exception) obj;
 		String url = httpServletRequest.getRequestURI();
-		HttpMethod method = servletWebRequest.getHttpMethod();
 		StringBuilder builder = new StringBuilder(CAPACITY);
+		builder.append(getParams(httpServletRequest, method));
 		StringBuilder multipartBuilder = new StringBuilder(CAPACITY);
-		if (method == HttpMethod.GET || method == HttpMethod.POST) {
-			builder.append(getParams(httpServletRequest, method));
-			String contentType = httpServletRequest.getContentType();
-			if (contentType.equalsIgnoreCase(MediaType.MULTIPART_FORM_DATA.getType())) {
-				multipartBuilder.append(getMultipartFilesInfo(httpServletRequest, method));
+		String contentType = httpServletRequest.getContentType();
+		Object obj = httpServletRequest.getAttribute("ex");
+		Exception exception = (Exception) obj;
+		if (contentType != null && contentType.equalsIgnoreCase(MediaType.MULTIPART_FORM_DATA.getType())) {
+			multipartBuilder.append(getMultipartFilesInfo(httpServletRequest, method));
+			if (obj != null && requestLog.isError()) {
 				log.error("request-id:{},url:{},method:{},params:{},multipart-params:{}", requestId, url, method,
 						builder, multipartBuilder, exception);
-			} else {
+			} else if (requestLog.isAfter()) {
+				log.info("request-id:{},url:{},method:{},params:{},multipart-params:{}", requestId, url, method,
+						builder, multipartBuilder);
+			}
+		} else {
+			if (obj != null && requestLog.isError()) {
 				log.error("request-id:{},url:{},method:{},params:{}", requestId, url, method, builder, exception);
+			} else if (requestLog.isAfter()) {
+				log.info("request-id:{},url:{},method:{},params:{}", requestId, url, method, builder);
 			}
 		}
 	}

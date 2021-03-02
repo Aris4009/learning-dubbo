@@ -6,10 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.db2.model.MyPageInfo;
@@ -146,5 +143,10 @@ public class StudentController {
 		map.put("filename", file.getOriginalFilename());
 		map.put("size", file.getSize());
 		return Response.ok(map, request);
+	}
+
+	@GetMapping("/get")
+	public Response<Map<String, Object>> get(@RequestParam Map<String, Object> param) throws BusinessException {
+		return Response.ok(param, request);
 	}
 }

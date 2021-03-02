@@ -19,6 +19,12 @@ import com.example.json.JSON;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+	private final RequestLogConfig.RequestLog requestLog;
+
+	public WebConfig(RequestLogConfig.RequestLog requestLog) {
+		this.requestLog = requestLog;
+	}
+
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 		GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
@@ -34,7 +40,7 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addWebRequestInterceptor(new LogWebRequestInterceptor());
+		registry.addWebRequestInterceptor(new LogWebRequestInterceptor(this.requestLog));
 	}
 
 }

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
+import com.example.config.RequestLogConfig;
+
 /**
  * 统一错误处理controller
  */
@@ -22,6 +24,12 @@ import org.springframework.web.context.request.WebRequest;
 public class ExControllerAdvice {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+	private final RequestLogConfig.RequestLog requestLog;
+
+	public ExControllerAdvice(RequestLogConfig.RequestLog requestLog) {
+		this.requestLog = requestLog;
+	}
 
 	@ExceptionHandler(Exception.class)
 	@SuppressWarnings("unchecked")
@@ -36,7 +44,9 @@ public class ExControllerAdvice {
 			String url = (String) preHandleEx.get("url");
 			HttpMethod method = (HttpMethod) preHandleEx.get("method");
 			Exception exception = (Exception) preHandleEx.get("exception");
-			log.error("request-id:{},url:{},method:{}", requestId, url, method, exception);
+			if (requestLog.isError()) {
+				log.error("request-id:{},url:{},method:{}", requestId, url, method, exception);
+			}
 		}
 		return new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
