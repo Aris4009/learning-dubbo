@@ -17,4 +17,5 @@
     <logger name="org.springframework" level="WARN"/>
     <logger name="org.apache" level="ERROR"/>
     <logger name="com.zaxxer" level="ERROR"/>
+    <logger name="com.example.db2.dao" level="DEBUG"/>
 </configuration>
