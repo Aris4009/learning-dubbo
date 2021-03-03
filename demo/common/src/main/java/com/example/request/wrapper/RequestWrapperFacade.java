@@ -10,12 +10,6 @@ public class RequestWrapperFacade {
 	private final RequestWrapper requestWrapper;
 
 	public RequestWrapperFacade(HttpServletRequest httpServletRequest) throws Exception {
-//		if (httpServletRequest instanceof RequestFacade) {
-//			this.requestWrapper = new RequestWrapper(httpServletRequest);
-//		} else {
-//			this.requestWrapper = (RequestWrapper) httpServletRequest;
-//			this.requestWrapper.getInputStream();
-//		}
 		if (httpServletRequest instanceof RequestWrapper) {
 			this.requestWrapper = (RequestWrapper) httpServletRequest;
 			this.requestWrapper.getInputStream();

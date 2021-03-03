@@ -48,6 +48,7 @@ public class RequestWrapper extends HttpServletRequestWrapper {
 
 	@Override
 	public ServletInputStream getInputStream() throws IOException {
+		// 获取原始请求,并解析
 		ServletInputStream servletInputStream = this.getRequest().getInputStream();
 		byte[] buff = new byte[BUFF_SIZE];
 		StringBuilder builder = new StringBuilder(CAPACITY);
@@ -55,13 +56,18 @@ public class RequestWrapper extends HttpServletRequestWrapper {
 		while ((n = servletInputStream.read(buff)) != -1) {
 			builder.append(new String(buff, 0, n));
 		}
-		if (builder.length() > 0) {
+		// 首次获取原始请求，会得到请求体；第二次获取原始请求，不会得到请求体，因为原始请求只能读取一次。首次请求体也可能为null
+		ByteArrayInputStream byteArrayInputStream;
+		if (builder.length() == 0) {
+			if (this.requestBody == null) {
+				byteArrayInputStream = new ByteArrayInputStream(new byte[0]);
+			} else {
+				byteArrayInputStream = new ByteArrayInputStream(this.requestBody.getBytes());
+			}
+		} else {
 			this.requestBody = builder.toString();
+			byteArrayInputStream = new ByteArrayInputStream(this.requestBody.getBytes());
 		}
-		if (this.requestBody == null) {
-			return null;
-		}
-		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.requestBody.getBytes());
 		return new ServletInputStream() {
 			@Override
 			public boolean isFinished() {

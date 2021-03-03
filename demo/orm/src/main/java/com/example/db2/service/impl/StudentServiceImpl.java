@@ -32,6 +32,9 @@ public class StudentServiceImpl implements IStudentService {
 
 	@Override
 	public List<Student> list(Student student) throws BusinessException {
+		if (student == null) {
+			throw BusinessException.paramsMustBeNotEmptyOrNullError("student");
+		}
 		List<Student> list = null;
 		StudentDao studentDao;
 		try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
