@@ -42,7 +42,7 @@ public class MybatisSpringConfig {
 		return new HikariDataSource(hikariConfig);
 	}
 
-	@Bean("tx")
+	@Bean("tx3")
 	public TransactionManager tx(@Qualifier("db3") DataSource dataSource) {
 		return new DataSourceTransactionManager(dataSource);
 	}
