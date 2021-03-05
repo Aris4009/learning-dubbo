@@ -10,5 +10,5 @@ public interface IStoreLog {
 	 * 
 	 * @param requestLog 日志对象
 	 */
-	public void store(RequestLog requestLog);
+	void store(RequestLog requestLog);
 }

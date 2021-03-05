@@ -2,8 +2,6 @@ package com.example.exception.handler;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +16,6 @@ import com.example.exception.ErrorPathException;
  */
 @Controller
 public class ExController implements ErrorController {
-
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@RequestMapping("/error")
 	public ResponseEntity<Map<String, Object>> ex(WebRequest request) {

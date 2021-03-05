@@ -17,9 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserServiceImpl implements IUserService {
 
-	private ITestDao testDao;
+	private final ITestDao testDao;
 
-	private IUserDao userDao;
+	private final IUserDao userDao;
 
 	public UserServiceImpl(ITestDao testDao, IUserDao userDao) {
 		this.testDao = testDao;
