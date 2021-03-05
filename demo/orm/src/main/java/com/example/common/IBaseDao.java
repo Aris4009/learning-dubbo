@@ -1,4 +1,4 @@
-package com.example.db1.dao;
+package com.example.common;
 
 import java.io.Serializable;
 

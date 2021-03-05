@@ -34,7 +34,7 @@ public class ServiceImpl implements IService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional("tx3")
 	public void batch(Map<String, Integer> param) throws BusinessException {
 		if (param == null || param.get("num") == null) {
 			throw BusinessException.paramsMustBeNotEmptyOrNullError("num");

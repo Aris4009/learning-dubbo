@@ -1,5 +1,6 @@
 package com.example.db1.dao;
 
+import com.example.common.IBaseDao;
 import com.example.db1.model.Test;
 
 /**

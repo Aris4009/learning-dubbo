@@ -42,7 +42,7 @@ public class LogHandlerInterceptor implements HandlerInterceptor {
 			throw new BusinessException("unsupported " + httpMethod + " method");
 		}
 
-		String requestId = UUID.randomUUID().toString();
+		String requestId = UUID.randomUUID().toString().replace("-", "");
 		String url = httpServletRequest.getRequestURI();
 		String method = null;
 		if (httpMethod != null) {

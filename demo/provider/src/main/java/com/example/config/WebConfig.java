@@ -1,6 +1,7 @@
 package com.example.config;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.annotation.Configuration;
@@ -10,8 +11,10 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.example.interceptor.IStoreLog;
 import com.example.interceptor.LogHandlerInterceptor;
 import com.example.json.JSON;
+import com.example.test_log.service.RequestLogService;
 
 /**
  * web配置
@@ -21,8 +24,11 @@ public class WebConfig implements WebMvcConfigurer {
 
 	private final RequestLogConfig requestLogConfig;
 
-	public WebConfig(RequestLogConfig requestLogConfig) {
+	private final RequestLogService requestLogService;
+
+	public WebConfig(RequestLogConfig requestLogConfig, RequestLogService requestLogService) {
 		this.requestLogConfig = requestLogConfig;
+		this.requestLogService = requestLogService;
 	}
 
 	@Override
@@ -40,6 +46,8 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new LogHandlerInterceptor(this.requestLogConfig));
+		List<IStoreLog> list = new ArrayList<>();
+		list.add(this.requestLogService);
+		registry.addInterceptor(new LogHandlerInterceptor(this.requestLogConfig, list));
 	}
 }

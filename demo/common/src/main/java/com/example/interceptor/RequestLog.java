@@ -3,6 +3,9 @@ package com.example.interceptor;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,6 +27,12 @@ import lombok.Data;
  */
 @Data
 public class RequestLog implements Serializable {
+
+	// 时间
+	private long time;
+
+	// 时间-字符串表示
+	private String timeStr;
 
 	// 请求id
 	private String requestId;
@@ -58,7 +67,9 @@ public class RequestLog implements Serializable {
 	private static final int CAPACITY = 1024;
 
 	public RequestLog() {
-
+		LocalDateTime localDateTime = LocalDateTime.now();
+		this.time = localDateTime.toInstant(ZoneOffset.of("+8")).toEpochMilli() / 1000;
+		this.timeStr = localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 	}
 
 	public void setException(Exception exception) {
