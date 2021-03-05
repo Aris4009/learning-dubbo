@@ -16,16 +16,20 @@ import com.example.exception.BusinessException;
 
 public class LogHandlerInterceptor implements HandlerInterceptor {
 
+	private final String serviceId;
+
 	private final RequestLogConfig requestLogConfig;
 
 	private final List<IStoreLog> storeLogList;
 
-	public LogHandlerInterceptor(RequestLogConfig requestLogConfig) {
+	public LogHandlerInterceptor(String serviceId, RequestLogConfig requestLogConfig) {
+		this.serviceId = serviceId;
 		this.requestLogConfig = requestLogConfig;
 		this.storeLogList = null;
 	}
 
-	public LogHandlerInterceptor(RequestLogConfig requestLogConfig, List<IStoreLog> storeLogList) {
+	public LogHandlerInterceptor(String serviceId, RequestLogConfig requestLogConfig, List<IStoreLog> storeLogList) {
+		this.serviceId = serviceId;
 		this.requestLogConfig = requestLogConfig;
 		this.storeLogList = storeLogList;
 	}
@@ -49,7 +53,11 @@ public class LogHandlerInterceptor implements HandlerInterceptor {
 			method = httpMethod.name();
 		}
 		try {
-			RequestLog requestLog = new RequestLog(requestId, url, httpMethod, httpServletRequest, handler);
+			RequestLog requestLog = new RequestLog(this.serviceId, requestId, url, httpMethod, httpServletRequest,
+					handler);
+			requestLog.beforeType();
+			requestLog.setTime();
+
 			httpServletRequest.setAttribute("request-id", requestId);
 			httpServletRequest.setAttribute("url", url);
 			if (url.equals("/error")) {
@@ -66,6 +74,8 @@ public class LogHandlerInterceptor implements HandlerInterceptor {
 			// 封装预处理错误，由于此处发生异常，导致afterCompletion方法无法执行而采取的补救措施
 			RequestLog requestLog = new RequestLog();
 			requestLog.setRequestId(requestId);
+			requestLog.errorType();
+			requestLog.setTime();
 			requestLog.setUrl(url);
 			requestLog.setMethod(method);
 			requestLog.setException(e);
@@ -86,6 +96,9 @@ public class LogHandlerInterceptor implements HandlerInterceptor {
 		}
 
 		RequestLog requestLog = (RequestLog) httpServletRequest.getAttribute(REQUEST_LOG_ATTRIBUTE);
+		requestLog.afterType();
+		requestLog.setTime();
+
 		Exception exception = requestLog.getException();
 		if (requestLogConfig.isError() && exception != null) {
 			log.error("{}", requestLog);

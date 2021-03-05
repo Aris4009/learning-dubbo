@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.db1.model.MyPageInfo;
 import com.example.interceptor.IStoreLog;
@@ -26,6 +27,7 @@ public class RequestLogService implements IStoreLog {
 
 	@Override
 	@Async
+	@Transactional("testLogTx")
 	public void store(RequestLog requestLog) {
 		try {
 			requestLogDao.insert(requestLog);

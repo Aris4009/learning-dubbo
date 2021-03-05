@@ -28,6 +28,9 @@ import lombok.Data;
 @Data
 public class RequestLog implements Serializable {
 
+	// 实例id
+	private String serviceId;
+
 	// 时间
 	private long time;
 
@@ -58,6 +61,9 @@ public class RequestLog implements Serializable {
 	// 异常
 	private transient Exception exception;
 
+	// 类型 0-before 1-after 2-error
+	private int type;
+
 	private String errorMsg;
 
 	private transient HttpServletRequest httpServletRequest;
@@ -67,26 +73,11 @@ public class RequestLog implements Serializable {
 	private static final int CAPACITY = 1024;
 
 	public RequestLog() {
-		LocalDateTime localDateTime = LocalDateTime.now();
-		this.time = localDateTime.toInstant(ZoneOffset.of("+8")).toEpochMilli() / 1000;
-		this.timeStr = localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 	}
 
-	public void setException(Exception exception) {
-		if (exception == null) {
-			return;
-		}
-		this.exception = new Exception(exception);
-		try (StringWriter stringWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(stringWriter);) {
-			this.exception.printStackTrace(printWriter);
-			this.errorMsg = stringWriter.toString();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public RequestLog(String requestId, String url, HttpMethod httpMethod, HttpServletRequest httpServletRequest,
-			Object handler) throws BusinessException {
+	public RequestLog(String serviceId, String requestId, String url, HttpMethod httpMethod,
+			HttpServletRequest httpServletRequest, Object handler) throws BusinessException {
+		this.serviceId = serviceId;
 		this.httpServletRequest = UnWrapHttpServletRequestWrapper.unwrap(httpServletRequest);
 		this.requestId = requestId;
 		this.url = url;
@@ -157,6 +148,45 @@ public class RequestLog implements Serializable {
 		} catch (Exception e) {
 			throw new BusinessException(e);
 		}
+	}
+
+	/**
+	 * 设置异常
+	 * 
+	 * @param exception 异常信息
+	 */
+	public void setException(Exception exception) {
+		if (exception == null) {
+			return;
+		}
+		this.exception = new Exception(exception);
+		try (StringWriter stringWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(stringWriter);) {
+			this.exception.printStackTrace(printWriter);
+			this.errorMsg = stringWriter.toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 设置时间
+	 */
+	public void setTime() {
+		LocalDateTime localDateTime = LocalDateTime.now();
+		this.time = localDateTime.toInstant(ZoneOffset.of("+8")).toEpochMilli() / 1000;
+		this.timeStr = localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+	}
+
+	public void beforeType() {
+		this.type = 0;
+	}
+
+	public void afterType() {
+		this.type = 1;
+	}
+
+	public void errorType() {
+		this.type = 2;
 	}
 
 	public String toString() {

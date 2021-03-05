@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
@@ -26,7 +27,11 @@ public class WebConfig implements WebMvcConfigurer {
 
 	private final RequestLogService requestLogService;
 
-	public WebConfig(RequestLogConfig requestLogConfig, RequestLogService requestLogService) {
+	private final String serviceId;
+
+	public WebConfig(RequestLogConfig requestLogConfig, RequestLogService requestLogService,
+			@Value("${spring.application.name}") String serviceId) {
+		this.serviceId = serviceId;
 		this.requestLogConfig = requestLogConfig;
 		this.requestLogService = requestLogService;
 	}
@@ -48,6 +53,6 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		List<IStoreLog> list = new ArrayList<>();
 		list.add(this.requestLogService);
-		registry.addInterceptor(new LogHandlerInterceptor(this.requestLogConfig, list));
+		registry.addInterceptor(new LogHandlerInterceptor(this.serviceId, this.requestLogConfig, list));
 	}
 }

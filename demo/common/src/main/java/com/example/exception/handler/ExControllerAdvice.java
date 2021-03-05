@@ -70,6 +70,8 @@ public class ExControllerAdvice {
 				requestLog.setException(ex);
 			}
 		}
+		requestLog.errorType();
+		requestLog.setTime();
 		StoreLogUtil.storeLog(storeLogList, requestLog);
 		return new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
 	}

@@ -18,5 +18,4 @@
     <logger name="org.apache" level="ERROR"/>
     <logger name="com.zaxxer" level="ERROR"/>
     <logger name="com.example.db2.dao" level="DEBUG"/>
-    <logger name="com.example.test_log.dao" level="DEBUG"/>
 </configuration>
