@@ -35,6 +35,7 @@
         <p6py.version>3.9.1</p6py.version>
         <hutool.version>5.5.8</hutool.version>
         <pagehelper.version>5.2.0</pagehelper.version>
+        <dubbo.version>2.7.9</dubbo.version>
     </properties>
 
     <dependencies>
@@ -121,6 +122,18 @@
                 <groupId>com.github.pagehelper</groupId>
                 <artifactId>pagehelper</artifactId>
                 <version>${pagehelper.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-dependencies-zookeeper</artifactId>
+                <version>${dubbo.version}</version>
+                <type>pom</type>
             </dependency>
         </dependencies>
     </dependencyManagement>

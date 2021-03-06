@@ -4,14 +4,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.example.interceptor.IStoreLog;
+import com.example.interceptor.LogHandlerInterceptor;
 import com.example.json.JSON;
+import com.example.test_log.service.RequestLogService;
 
 /**
  * web配置
@@ -19,34 +23,36 @@ import com.example.json.JSON;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+	private final RequestLogConfig requestLogConfig;
+
+	private final RequestLogService requestLogService;
+
+	private final String serviceId;
+
+	public WebConfig(RequestLogConfig requestLogConfig, RequestLogService requestLogService,
+			@Value("${spring.application.name}") String serviceId) {
+		this.serviceId = serviceId;
+		this.requestLogConfig = requestLogConfig;
+		this.requestLogService = requestLogService;
+	}
+
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 		GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
 		converter.setGson(JSON.gson);
 		converter.setDefaultCharset(StandardCharsets.UTF_8);
-		List<MediaType> mediaTypesList = new ArrayList<>();
-		mediaTypesList.add(MediaType.APPLICATION_JSON);
-		mediaTypesList.add(MediaType.APPLICATION_ATOM_XML);
-		mediaTypesList.add(MediaType.APPLICATION_FORM_URLENCODED);
-		mediaTypesList.add(MediaType.APPLICATION_OCTET_STREAM);
-		mediaTypesList.add(MediaType.APPLICATION_PDF);
-		mediaTypesList.add(MediaType.APPLICATION_RSS_XML);
-		mediaTypesList.add(MediaType.APPLICATION_XHTML_XML);
-		mediaTypesList.add(MediaType.APPLICATION_XML);
-		mediaTypesList.add(MediaType.IMAGE_GIF);
-		mediaTypesList.add(MediaType.IMAGE_JPEG);
-		mediaTypesList.add(MediaType.IMAGE_PNG);
-		mediaTypesList.add(MediaType.TEXT_EVENT_STREAM);
-		mediaTypesList.add(MediaType.TEXT_HTML);
-		mediaTypesList.add(MediaType.TEXT_MARKDOWN);
-		mediaTypesList.add(MediaType.TEXT_PLAIN);
-		mediaTypesList.add(MediaType.TEXT_XML);
-		converter.setSupportedMediaTypes(mediaTypesList);
 		converters.add(0, converter);
 	}
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**");
+		registry.addMapping("/api/**");
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		List<IStoreLog> list = new ArrayList<>();
+		list.add(this.requestLogService);
+		registry.addInterceptor(new LogHandlerInterceptor(this.serviceId, this.requestLogConfig, list));
 	}
 }

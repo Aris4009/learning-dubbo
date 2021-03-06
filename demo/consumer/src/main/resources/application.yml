@@ -1,27 +1,4 @@
-##基本信息配置
+##profile配置激活
 spring:
-  datasource:
-    hikari:
-      jdbc-url: jdbc:mysql://localhost:3306/test?useSSL=false
-      username: root
-      password: ""
-  main:
-    banner-mode: off
-
-##服务器配置
-server:
-  port: 9000
-  compression:
-    enabled: true
-  http2:
-    enabled: true
-  error:
-    whitelabel:
-      enabled: false
-  servlet:
-    session:
-      cookie:
-        http-only: true
-    encoding:
-      charset: utf-8
-      force: true
+  profiles:
+    active: dev
