@@ -36,6 +36,7 @@
         <hutool.version>5.5.8</hutool.version>
         <pagehelper.version>5.2.0</pagehelper.version>
         <dubbo.version>2.7.9</dubbo.version>
+        <zk.version>3.6.2</zk.version>
     </properties>
 
     <dependencies>
@@ -134,6 +135,12 @@
                 <artifactId>dubbo-dependencies-zookeeper</artifactId>
                 <version>${dubbo.version}</version>
                 <type>pom</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <version>${zk.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
