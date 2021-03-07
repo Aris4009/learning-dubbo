@@ -3,11 +3,8 @@ package com.example.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 
-/**
- * dubbo 服务端配置
- */
 @Configuration
-@ImportResource(value = "classpath:provider.xml")
-public class ProviderConfig {
+@ImportResource("classpath:consumer.xml")
+public class ConsumerConfig {
 
 }

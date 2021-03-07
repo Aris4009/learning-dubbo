@@ -2,8 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://dubbo.apache.org/schema/dubbo http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
-    <dubbo:application name="provider"/>
+    <dubbo:application name="consumer"/>
     <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
-    <dubbo:protocol name="dubbo" port="10800"/>
-    <dubbo:service id="dubboUserService" interface="com.example.db1.service.IUserService" ref="userServiceImpl"/>
+    <dubbo:reference id="dubboUserService" interface="com.example.db1.service.IUserService"/>
 </beans>
