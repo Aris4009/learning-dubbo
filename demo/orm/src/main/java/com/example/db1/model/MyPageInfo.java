@@ -6,7 +6,9 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class MyPageInfo<T extends Serializable> {
+public class MyPageInfo<T extends Serializable> implements Serializable {
+
+	private static final long serialVersionUID = 7183896354085675654L;
 
 	private transient T param;
 

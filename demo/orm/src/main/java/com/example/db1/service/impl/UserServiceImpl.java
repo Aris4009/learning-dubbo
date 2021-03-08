@@ -13,7 +13,7 @@ import com.example.exception.BusinessException;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Service
+@Service("userService")
 @Slf4j
 public class UserServiceImpl implements IUserService {
 

@@ -33,7 +33,7 @@ public class UserController {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public UserController(@Qualifier("dubboUserService") IUserService userService, HttpServletRequest request) {
+	public UserController(@Qualifier("providerService") IUserService userService, HttpServletRequest request) {
 		this.userService = userService;
 		this.request = request;
 	}
