@@ -72,8 +72,11 @@ public class LogHandlerInterceptor implements HandlerInterceptor {
 			return true;
 		} catch (Exception e) {
 			// 封装预处理错误，由于此处发生异常，导致afterCompletion方法无法执行而采取的补救措施
-			RequestLog requestLog = RequestLog.builder().requestId(requestId).url(url).method(method).exception(e)
-					.build();
+			RequestLog requestLog = new RequestLog();
+			requestLog.setRequestId(requestId);
+			requestLog.setUrl(url);
+			requestLog.setMethod(method);
+			requestLog.setException(e);
 			requestLog.errorType();
 			requestLog.setTime();
 

@@ -20,14 +20,12 @@ import com.example.request.wrapper.RequestWrapper;
 import com.example.request.wrapper.RequestWrapperFacade;
 import com.example.request.wrapper.UnWrapHttpServletRequestWrapper;
 
-import lombok.Builder;
 import lombok.Data;
 
 /**
  * 请求日志对象
  */
 @Data
-@Builder
 public class RequestLog implements Serializable {
 
 	private static final long serialVersionUID = -1032433027159174788L;
